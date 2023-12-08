@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'mailing',
     'message',
     'user',
+    'article',
 ]
 
 MIDDLEWARE = [

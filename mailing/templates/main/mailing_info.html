@@ -4,7 +4,7 @@
 {% block content %}
 <div>
     <h1 class="container text-center pt-5">
-        User
+        Mailing
     </h1>
 
 
@@ -16,25 +16,25 @@
                 <div class="col">
                     <div class="card shadow-sm">
                         <div class="card-body">
-                            <p class="card-text">Name - {{ object.name }}</p>
-                            <p class="card-text">Lastname - {{ object.lastname }}</p>
-                            <p class="card-text">Birthday - {{ object.birthday }}</p>
-                            <p class="card-text">Email - {{ object.email }}</p>
+                            <p class="card-text">data_mailing - {{ object.data_mailing }}</p>
+                            <p class="card-text">periodicity - {{ object.periodicity }}</p>
+                            <p class="card-text">Birthday - </p>
+                            <p class="card-text">Email - </p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
                                     <a href="{% url 'index' %}" type="button"
                                        class="btn btn-sm btn-outline-secondary">Back
                                     </a>
-                                    <a href="{% url 'user_update' object.pk %}" type="button"
+                                    <a href="{% url 'mailing_update' object.pk %}" type="button"
                                        class="btn btn-sm btn-outline-secondary">Edit
                                     </a>
-                                    <a href="{% url 'user_delete' object.pk %}" type="button"
+                                    <a href="{% url 'mailing_delete' object.pk %}" type="button"
                                        class="btn btn-sm btn-outline-secondary">Delete
                                     </a>
 
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-outline-primary" ><a href="{% url 'mailing_form' %}">Create new mailing</a></button>
+                            <button type="button" class="btn btn-outline-primary" ><a href="{% url 'message_form' %}">Create message to this mailing</a></button>
                         </div>
                     </div>
                 </div>

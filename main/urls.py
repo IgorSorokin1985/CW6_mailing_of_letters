@@ -4,5 +4,5 @@ from article.views import ArticleCreateView
 
 
 urlpatterns = [
-    path('', index),
+    path('', index, name='index'),
 ]

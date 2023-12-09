@@ -1,8 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-from client.models import Client
+from user.models import User
 
-@admin.register(Client)
-class ClientAdmin(admin.ModelAdmin):
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'email', 'is_manager')

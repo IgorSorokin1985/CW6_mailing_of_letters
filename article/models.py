@@ -1,5 +1,6 @@
 from django.db import models
 from pytils.translit import slugify
+import datetime
 
 NULLABLE = {'blank': True, 'null': True}
 
@@ -20,6 +21,9 @@ class Article(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
+        now = datetime.datetime.now()
+        self.data_created = now
+        self.data_published = now
         super().save(args, kwargs)
 
     class Meta:

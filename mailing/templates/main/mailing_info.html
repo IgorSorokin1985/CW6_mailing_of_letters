@@ -1,0 +1,49 @@
+{% extends 'main/base.html' %}
+{% load my_tags %}
+
+{% block content %}
+<div>
+    <h1 class="container text-center pt-5">
+        Mailing
+    </h1>
+
+
+    <div class="py-5">
+        <div class="container">
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <p class="card-text">data_mailing - {{ object.data_mailing }}</p>
+                            <p class="card-text">periodicity - {{ object.periodicity }}</p>
+                            <p class="card-text">Birthday - </p>
+                            <p class="card-text">Email - </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="{% url 'index' %}" type="button"
+                                       class="btn btn-sm btn-outline-secondary">Back
+                                    </a>
+                                    <a href="{% url 'mailing_update' object.pk %}" type="button"
+                                       class="btn btn-sm btn-outline-secondary">Edit
+                                    </a>
+                                    <a href="{% url 'mailing_delete' object.pk %}" type="button"
+                                       class="btn btn-sm btn-outline-secondary">Delete
+                                    </a>
+
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary" ><a href="{% url 'message_form' %}">Create message to this mailing</a></button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock %}

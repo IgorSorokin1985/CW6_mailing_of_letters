@@ -1,6 +1,12 @@
 {% extends 'main/base.html' %}
+{% load my_tags %}
 
 {% block content %}
-<h1 class="container">Hello World</h1>
+{% include 'main/components/welcome.html' %}
+{% include 'main/components/articles.html' %}
+
+{% include 'main/components/about_us.html' %}
+
+{% include 'main/components/statistic.html' %}
 
 {% endblock %}

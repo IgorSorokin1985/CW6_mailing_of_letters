@@ -1,0 +1,50 @@
+{% load my_tags %}
+<div class="container">
+    <div id="carouselExampleRide" class="carousel slide" data-bs-ride="true">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="row">
+                    <div class="col-4">
+                        <img src="{{ article_1.blog_image|my_media }}" class="d-block w-100" alt="...">
+                    </div>
+                    <div class="col-8">
+                        <h3> {{ article_1.title }}</h3>
+                        <h5 class="container"> {{ article_1.text }} </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row">
+                    <div class="col-4">
+                        <img src="{{ article_2.blog_image|my_media }}" class="d-block w-100" alt="...">
+                    </div>
+                    <div class="col-8">
+                        <h3> {{ article_2.title }}</h3>
+                        <h5 class="container"> {{ article_2.text }} </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row">
+                    <div class="col-4">
+                        <img src="{{ article_3.blog_image|my_media }}" class="d-block w-100" alt="...">
+                    </div>
+                    <div class="col-8">
+                        <h3> {{ article_3.title }}</h3>
+                        <h5 class="container"> {{ article_3.text }} </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleRide" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleRide" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+
+</div>

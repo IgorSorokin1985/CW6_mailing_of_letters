@@ -25,13 +25,13 @@
                             <p class="card-text">Is published - {{ object.is_published }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
-                                    <a href="#" type="button"
+                                    <a href="{% url 'index' %}" type="button"
                                        class="btn btn-sm btn-outline-secondary">Back
                                     </a>
-                                    <a href="#" type="button"
+                                    <a href="{% url 'article_update' object.slug %}" type="button"
                                        class="btn btn-sm btn-outline-secondary">Edit
                                     </a>
-                                    <a href="#" type="button"
+                                    <a href="{% url 'article_delete' object.slug %}article_delete" type="button"
                                        class="btn btn-sm btn-outline-secondary">Delete
                                     </a>
                                 </div>

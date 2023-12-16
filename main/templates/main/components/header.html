@@ -1,18 +1,22 @@
-  <div class="container">
-    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+<div class="sticky-top bg-body-tertiary">
+    <div class="container">
+
+        <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
 
 
-      <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li>
-        <li><a href="#" class="nav-link px-2">Features</a></li>
-        <li><a href="#" class="nav-link px-2">Pricing</a></li>
-        <li><a href="#" class="nav-link px-2">FAQs</a></li>
-        <li><a href="#" class="nav-link px-2">About</a></li>
-      </ul>
+            <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li>
+                <li><a href="#" class="nav-link px-2">About us</a></li>
+                <li><a href="#" class="nav-link px-2">Articles</a></li>
+                <li><a href="#" class="nav-link px-2">Statistic</a></li>
 
-      <div class="col-md-3 text-end">
-        <button type="button" class="btn btn-outline-primary me-2" ><a href="#">Login</a></button>
-        <button type="button" class="btn btn-outline-primary" ><a href="{% url 'user_form' %}">Sign-up</a></button>
-      </div>
-    </header>
-  </div>
+            </ul>
+
+            <div class="col-md-3 text-end">
+                <a class="btn btn-primary px-4 gap-3" href="#" role="button">Login</a>
+                <a class="btn btn-outline-secondary px-4" href="{% url 'user_form' %}" role="button">Sign-up</a>
+
+            </div>
+        </header>
+    </div>
+</div>

@@ -14,7 +14,7 @@ class ArticleCreateView(CreateView):
     template_name = 'main/article_form.html'
 
     def get_success_url(self):
-        return reverse('article_info', args=[self.object.pk, self.object.slug])
+        return reverse('article_info', args=[self.object.slug])
 
 
 class ArticleDetailView(DetailView):
@@ -28,3 +28,18 @@ class ArticleDetailView(DetailView):
         context = self.get_context_data(object=self.object)
 
         return self.render_to_response(context)
+
+
+class ArticleDeleteView(DeleteView):
+    model = Article
+    template_name = 'main/article_confirm_delete.html'
+    success_url = reverse_lazy('index')
+
+
+class ArticleUpdateView(UpdateView):
+    model = Article
+    fields = ['title', 'text', 'blog_image']
+    template_name = 'main/article_form.html'
+
+    def get_success_url(self):
+        return reverse('article_info', args=[self.object.slug])

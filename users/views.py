@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from user.models import User
+from users.models import User
 from django.urls import reverse_lazy, reverse
 
 # Create your views here.

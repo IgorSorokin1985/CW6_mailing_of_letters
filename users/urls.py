@@ -1,5 +1,5 @@
 from django.urls import path
-from user.views import UserCreateView, UserDetailView, UserUpdateView, UserDeleteView
+from users.views import UserCreateView, UserDetailView, UserUpdateView, UserDeleteView
 
 urlpatterns = [
     path('user_form', UserCreateView.as_view(), name='user_form'),

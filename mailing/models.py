@@ -1,6 +1,6 @@
 from django.db import models
 
-from user.models import User
+from users.models import User
 
 NULLABLE = {'blank': True, 'null': True }
 # Create your models here.

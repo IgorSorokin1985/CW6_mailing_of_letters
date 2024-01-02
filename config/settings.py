@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'log',
     'mailing',
     'message',
-    'user',
+    'users',
     'article',
 ]
 

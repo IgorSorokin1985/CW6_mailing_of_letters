@@ -1,5 +1,5 @@
 from django.contrib import admin
-from user.models import User
+from users.models import User
 from mailing.models import Periodicity
 from article.models import Article
 # Register your models here.

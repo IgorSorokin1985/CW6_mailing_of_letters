@@ -30,15 +30,11 @@ class EmailVerify(View):
         user = self.get_user(uidb64)
 
         if user is not None and token_generator.check_token(user, token):
-            print(user)
-            print(token_generator.check_token(user, token))
             user.email_verify = True
             user.save()
             login(request, user)
-            return redirect('product_list')
-        print(user)
-        print(token_generator.check_token(user, token))
-        return redirect('users:invalid_verify')
+            return redirect('index')
+        return redirect('invalid_verify')
 
     @staticmethod
     def get_user(uidb64):
@@ -58,7 +54,7 @@ class LogoutView(BaseLogoutView):
 class RegisterView(CreateView):
     model = User
     form_class = UserRegisterForm
-    success_url = reverse_lazy('users:login')
+    success_url = reverse_lazy('login')
     template_name = 'users/register.html'
 
     def form_valid(self, form):
@@ -75,40 +71,11 @@ class RegisterView(CreateView):
 
 class UserUpdateView(UpdateView):
     model = User
-    success_url = reverse_lazy('users:profile')
+    success_url = reverse_lazy('profile')
     form_class = UserForm
 
     def get_object(self, queryset=None):
         return self.request.user
-
-
-#class UserCreateView(CreateView):
-#    model = User
-#    fields = ["name", "lastname", "birthday", "email"]
-#    template_name = 'users/user_form.html'
-#
-#    def get_success_url(self):
-#        return reverse('user_info', args=[self.object.pk])
-#
-#
-#class UserDetailView(DetailView):
-#    model = User
-#    template_name = 'users/user_info.html'
-#
-#
-#class UserUpdateView(UpdateView):
-#    model = User
-#    template_name = 'users/user_form.html'
-#    fields = ["name", "lastname", "birthday", "email"]
-#
-#    def get_success_url(self):
-#        return reverse('user_info', args=[self.object.pk])
-#
-#
-#class UserDeleteView(DeleteView):
-#    model = User
-#    template_name = 'users/user_confirm_delete.html'
-#    success_url = reverse_lazy('index')
 
 
 def forgot_password(request):

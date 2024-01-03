@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'log',
     'mailing',
     'message',
-    'user',
+    'users',
     'article',
 ]
 
@@ -149,3 +149,8 @@ EMAIL_PORT = 465
 EMAIL_HOST_USER = os.getenv('EMAIL')
 EMAIL_HOST_PASSWORD = os.getenv('PASSWORD')
 EMAIL_USE_SSL = True
+
+AUTH_USER_MODEL = 'users.User'
+
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/'

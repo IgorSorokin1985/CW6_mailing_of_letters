@@ -14,6 +14,7 @@ from django.core.exceptions import ValidationError
 from django.utils.http import urlsafe_base64_decode
 from django.core.mail import send_mail
 from config.settings import EMAIL_HOST_USER
+from mailing.models import Mailing
 import random
 
 # Create your views here.
@@ -71,11 +72,26 @@ class RegisterView(CreateView):
 
 class UserUpdateView(UpdateView):
     model = User
-    success_url = reverse_lazy('profile')
+    success_url = reverse_lazy('user_update')
     form_class = UserForm
 
     def get_object(self, queryset=None):
         return self.request.user
+
+
+class UserDetailView(DetailView):
+    model = User
+    template_name = 'main/user_info.html'
+    success_url = reverse_lazy('profile')
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    #def get_context_data(self, *, object_list=None, **kwargs):
+    #    context = super().get_context_data(**kwargs)
+    #    context["mailing"] = Mailing.objects.filter(user=self.object).all()
+    #    print(context["mailing"])
+    #    return context
 
 
 def forgot_password(request):
@@ -92,7 +108,7 @@ def forgot_password(request):
             )
             user.set_password(new_password)
             user.save()
-            return redirect(reverse('users:login'))
+            return redirect(reverse('login'))
         except Exception:
             message = 'We can not find user with this email'
             contex = {

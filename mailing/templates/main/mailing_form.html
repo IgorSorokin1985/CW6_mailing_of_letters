@@ -3,16 +3,41 @@
 {% block content %}
 
 
-<div class="container text-center">
-    <h1 class="container text-center pt-5">
-        You can add mailing
-    </h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Sign-up">
-    </form>
+<form method="post" enctype="multipart/form-data">
+    <div class="container mt-5 mb-5">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header"></div>
+                    <div class="card-body">
 
-</div>
+                        {% csrf_token %}
+                        {{ form.as_p }}
+
+                    </div>
+                    <div class="card-body">
+
+                        {{ mailing_formset.management_form }}
+                        {% for form in mailing_formset.forms %}
+                        {{ form.as_p }}
+                        {% endfor %}
+
+                        {{ client_formset.management_form }}
+                        {% for form in client_formset.forms %}
+                        {{ form.as_p }}
+                        {% endfor %}
+
+                    </div>
+                    <div class="card-footer">
+                        <input type="submit" value="Save mailing">
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</form>
 
 {% endblock %}

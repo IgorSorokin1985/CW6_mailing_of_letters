@@ -3,47 +3,64 @@
 
 {% block content %}
 <div>
-    <h1 class="container text-center pt-5">
-        Mailing
-    </h1>
+    <h2 class="container text-center pt-5 mb-3">
+        {{ object.name }}
+    </h2>
+    <div class="container">
+        <div class="row">
+            <div class="col-8">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header">Mailing info</div>
+                    <div class="card-body">
+                        <p class="card-text">Name of mailing - {{ object.name }}</p>
+                        <p class="card-text">Date of mailing - {{ object.data_mailing }}</p>
+                        <p class="card-text">Periodicity - {{ object.periodicity }}</p>
+                    </div>
+                    <div class="card-footer"></div>
+                </div>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header">Message</div>
+                    <div class="card-body">
+                        <p class="card-text">Message - {{ message.0.title }}</p>
+                        <p class="card-text">Body - {{ message.0.body }}</p>
+                    </div>
+                    <div class="card-footer"></div>
+                </div>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header">Statistic</div>
+                    <div class="card-body"></div>
+                    <div class="card-footer"></div>
+                </div>
+                <div class="col d-flex align-items-center justify-content-center justify-content-md-between  mb-5">
+                    <div>
 
 
-    <div class="py-5">
-        <div class="container">
+                        <a href="{% url 'mailing_update' object.pk %}" type="button"
+                           class="btn btn-primary btn-lg px-4 gap-3 ">Edit
+                        </a>
+                        <a href="{% url 'mailing_delete' object.pk %}" type="button"
+                           class="btn btn-primary btn-lg px-4 gap-3 ">Delete
+                        </a>
+                    </div>
+                    <div>
 
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
 
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <p class="card-text">data_mailing - {{ object.data_mailing }}</p>
-                            <p class="card-text">periodicity - {{ object.periodicity }}</p>
-                            <p class="card-text">Message - {{ message.0.title }}</p>
-                            <p class="card-text">Body - {{ message.0.body }}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <a href="{% url 'index' %}" type="button"
-                                       class="btn btn-sm btn-outline-secondary">Back
-                                    </a>
-                                    <a href="{% url 'mailing_update' object.pk %}" type="button"
-                                       class="btn btn-sm btn-outline-secondary">Edit
-                                    </a>
-                                    <a href="{% url 'mailing_delete' object.pk %}" type="button"
-                                       class="btn btn-sm btn-outline-secondary">Delete
-                                    </a>
-
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-outline-primary" ><a href="{% url 'message_form' %}">Create message to this mailing</a></button>
-                        </div>
+                        <a class="btn btn-primary btn-lg px-4 gap-3 " href="{% url 'mailing_list' %}" role="button">Snow
+                            my mailings</a>
                     </div>
                 </div>
-
             </div>
+            <div class="col-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">Clients</div>
+                    <div class="card-body"></div>
+                    <div class="card-footer"></div>
+                </div>
+            </div>
+
         </div>
+
     </div>
-
-
 </div>
 
 {% endblock %}

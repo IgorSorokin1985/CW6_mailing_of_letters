@@ -3,49 +3,59 @@
 {% block content %}
 <div>
 
-    <h1 class="container text-center pt-5">
-        Список статей
+    <h1 class="container text-center pt-5 mb-5">
+        List of mailings
     </h1>
-    <div class="py-5">
-        <div class="container">
 
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">pk</th>
+                <th scope="col">Name of Mailing</th>
+                <th scope="col">Date</th>
+                <th scope="col">Status</th>
+                <th scope="col">Message title</th>
+                <th scope="col">Number of clients</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for object in mailing_list %}
+            <tr>
+                <th scope="row">{{ object.mailing.pk }}</th>
+                <td>{{ object.mailing.name }}</td>
+                <td>{{ object.mailing.data_mailing }}</td>
+                <td>{{ object.mailing.status }}</td>
+                <td>{{ object.message.title }}</td>
+                <td>{{ object.number_of_clients }}</td>
+                <th>
+                    <a href="{% url 'mailing_info' object.mailing.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">View
+                    </a>
+                    <a href="{% url 'mailing_update' object.mailing.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">Edit
+                    </a>
+                    <a href="{% url 'mailing_delete' object.mailing.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">Delete
+                    </a>
+                    {% if object.ready %}
+                    <a href="#" type="button"
+                       class="btn btn-sm btn-primary">GO!!!
+                    </a>
+                    {% endif %}
+                </th>
+            </tr>
+            {% endfor %}
 
-                {% for object in mailing_list %}
-
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <p class="card-text">{{ object.mailing.pk }}</p>
-                            <p class="card-text">{{ object.mailing.data_mailing }}</p>
-                            <p class="card-text">{{ object.mailing.periodicity }}</p>
-                            <p class="card-text">{{ object.message.title }}</p>
-                            <p class="card-text">{{ object.clients.0.name }}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <a href="#" type="button"
-                                       class="btn btn-sm btn-outline-secondary">View
-                                    </a>
-                                    <a href="#" type="button"
-                                       class="btn btn-sm btn-outline-secondary">Edit
-                                    </a>
-                                    <a href="#" type="button"
-                                       class="btn btn-sm btn-outline-secondary">Delete
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                {% endfor %}
-
-
-            </div>
+            </tbody>
+        </table>
+        <div class="row">
+            <div class="col-3"></div>
+            <a class="btn btn-primary btn-lg px-4 gap-3 mb-3 col-6 d-flex flex-wrap align-items-center justify-content-center"
+               href="{% url 'mailing_form' %}" role="button">Create new mailing</a>
         </div>
     </div>
-
 
 </div>
 

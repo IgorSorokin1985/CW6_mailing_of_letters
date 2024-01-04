@@ -9,6 +9,7 @@ from message.forms import MessageFrom
 from client.forms import ClientForm
 from django.forms import inlineformset_factory
 from django.shortcuts import redirect
+from mailing.utils import check_status_mailing
 
 # Create your views here.
 
@@ -24,6 +25,8 @@ class MailingCreateView(CreateView):
     def form_valid(self, form):
         self.object = form.save()
         self.object.user = self.request.user
+        if self.object.name is None:
+            self.object.name = f'Mailing №{self.object.pk}'
         self.object.save()
 
         context_data = self.get_context_data()
@@ -36,6 +39,8 @@ class MailingCreateView(CreateView):
             mailing_formset.save()
             client_formset.instance = self.object
             client_formset.save()
+            self.object.status = check_status_mailing(self.object)
+
         else:
             return self.form_invalid(form)
 
@@ -89,6 +94,8 @@ class MailingUpdateView(UpdateView):
             mailing_formset.save()
             client_formset.instance = self.object
             client_formset.save()
+            self.object.status = check_status_mailing(self.object)
+
         else:
             return self.form_invalid(form)
 
@@ -97,7 +104,7 @@ class MailingUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         mailing_formset = inlineformset_factory(Mailing, Message, form=MessageFrom, extra=0)
-        client_formset = inlineformset_factory(Mailing, Client, form=ClientForm, extra=0)
+        client_formset = inlineformset_factory(Mailing, Client, form=ClientForm, extra=1)
         if self.request.method == 'POST':
             context_data['mailing_formset'] = mailing_formset(self.request.POST, instance=self.object)
             context_data['client_formset'] = client_formset(self.request.POST, instance=self.object)
@@ -111,7 +118,7 @@ class MailingUpdateView(UpdateView):
 class MailingDeleteView(DeleteView):
     model = Mailing
     template_name = 'main/mailing_confirm_delete.html'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('mailing_list')
 
 class MailingListView(ListView):
     model = Mailing
@@ -126,8 +133,10 @@ class MailingListView(ListView):
             result = {
                 "mailing": mailing,
                 "message": Message.objects.filter(mailing=mailing).last(),
-                "clients": Client.objects.filter(mailing=mailing).all(),
+                "number_of_clients": len(Client.objects.filter(mailing=mailing).all()),
             }
+            if mailing.status == 'Ready':
+                result['ready'] = True
             result_list.append(result)
         context["mailing_list"] = result_list
         return context

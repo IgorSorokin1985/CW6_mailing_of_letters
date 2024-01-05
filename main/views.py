@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from article.models import Article
+from users.models import User
+from mailing.models import Mailing
+from client.models import Client
 import random
 
 # Create your views here.
@@ -13,4 +16,8 @@ def index(request):
         }
     else:
         data = {}
+    data["number_users"] = len(User.objects.all())
+    data["number_mailings"] = len(Mailing.objects.filter(status='Finished').all())
+    data["number_clients"] = len(Client.objects.all())
+
     return render(request, 'main/index.html', context=data)

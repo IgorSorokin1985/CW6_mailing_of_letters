@@ -13,11 +13,14 @@
             <tr>
                 <th scope="col">pk</th>
                 <th scope="col">Name of Mailing</th>
-                <th scope="col">Date</th>
+                <th scope="col">Next date</th>
                 <th scope="col">Status</th>
                 <th scope="col">Message title</th>
                 <th scope="col">Number of clients</th>
+                <th scope="col">Number of times</th>
+                <th scope="col">Last time</th>
                 <th scope="col">Action</th>
+                <th scope="col">Go now</th>
             </tr>
             </thead>
             <tbody>
@@ -29,7 +32,11 @@
                 <td>{{ object.mailing.status }}</td>
                 <td>{{ object.message.title }}</td>
                 <td>{{ object.number_of_clients }}</td>
+                <td>{{ object.number_of_times }}</td>
+                <td>{{ object.last_time.datatime }}</td>
                 <th>
+
+
                     <a href="{% url 'mailing_info' object.mailing.pk %}" type="button"
                        class="btn btn-sm btn-outline-secondary">View
                     </a>
@@ -39,11 +46,20 @@
                     <a href="{% url 'mailing_delete' object.mailing.pk %}" type="button"
                        class="btn btn-sm btn-outline-secondary">Delete
                     </a>
+
+                </th>
+                <th>
+
                     {% if object.ready %}
-                    <a href="#" type="button"
-                       class="btn btn-sm btn-primary">GO!!!
-                    </a>
+                    <form action="{% url 'mailing_go' object.mailing.pk %}" method="post">
+
+
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-primary" type="submit" value="TEST">GO!!!</button>
+                    </form>
                     {% endif %}
+
+
                 </th>
             </tr>
             {% endfor %}
@@ -56,6 +72,55 @@
                href="{% url 'mailing_form' %}" role="button">Create new mailing</a>
         </div>
     </div>
+
+    <h1 class="container text-center pt-5 mb-5">
+        List of finished mailings
+    </h1>
+
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">pk</th>
+                <th scope="col">Name of Mailing</th>
+
+                <th scope="col">Status</th>
+                <th scope="col">Message title</th>
+                <th scope="col">Number of clients</th>
+                <th scope="col">Number of times</th>
+                <th scope="col">Last time</th>
+                <th scope="col">Action</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for object in finished_list %}
+            <tr>
+                <th scope="row">{{ object.mailing.pk }}</th>
+                <td>{{ object.mailing.name }}</td>
+
+                <td>{{ object.mailing.status }}</td>
+                <td>{{ object.message.title }}</td>
+                <td>{{ object.number_of_clients }}</td>
+                <td>{{ object.number_of_times }}</td>
+                <td>{{ object.last_time.datatime }}</td>
+                <th>
+
+
+                    <a href="{% url 'mailing_info' object.mailing.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">View
+                    </a>
+
+                </th>
+
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+
 
 </div>
 

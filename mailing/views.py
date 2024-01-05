@@ -5,11 +5,12 @@ from django.urls import reverse_lazy, reverse
 from mailing.forms import MailingForm
 from message.models import Message
 from client.models import Client
+from log.models import Log
 from message.forms import MessageFrom
 from client.forms import ClientForm
 from django.forms import inlineformset_factory
 from django.shortcuts import redirect
-from mailing.utils import check_status_mailing
+from mailing.utils import check_status_mailing, mailing_execution
 
 # Create your views here.
 
@@ -20,7 +21,7 @@ class MailingCreateView(CreateView):
     template_name = 'main/mailing_form.html'
 
     def get_success_url(self):
-        return reverse('mailing_info', args=[self.object.pk])
+        return reverse('mailing_list')
 
     def form_valid(self, form):
         self.object = form.save()
@@ -66,8 +67,9 @@ class MailingDetailView(DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["message"] = Message.objects.filter(mailing=self.object).all()
-        print(context["message"])
+        context["message"] = Message.objects.filter(mailing=self.object).last()
+        context["clients"] = Client.objects.filter(mailing=self.object).all()
+        context["logs"] = Log.objects.filter(mailing=self.object).all()
         return context
 
 
@@ -77,7 +79,7 @@ class MailingUpdateView(UpdateView):
     template_name = 'main/mailing_form.html'
 
     def get_success_url(self):
-        return reverse('mailing_info', args=[self.object.pk])
+        return reverse('mailing_list')
 
     def form_valid(self, form):
         self.object = form.save()
@@ -120,6 +122,7 @@ class MailingDeleteView(DeleteView):
     template_name = 'main/mailing_confirm_delete.html'
     success_url = reverse_lazy('mailing_list')
 
+
 class MailingListView(ListView):
     model = Mailing
     template_name = 'main/mailing_list.html'
@@ -127,16 +130,28 @@ class MailingListView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         mailing_list = sorted(Mailing.objects.filter(user=self.request.user).all(), key=lambda object: object.pk, reverse=True)
-        #Mailing.objects.filter(user=self.request.user).all()
+        finished_list = []
         result_list = []
-        for mailing in mailing_list:
-            result = {
-                "mailing": mailing,
-                "message": Message.objects.filter(mailing=mailing).last(),
-                "number_of_clients": len(Client.objects.filter(mailing=mailing).all()),
-            }
-            if mailing.status == 'Ready':
-                result['ready'] = True
-            result_list.append(result)
+        if len(mailing_list) > 0:
+            for mailing in mailing_list:
+                result = {
+                    "mailing": mailing,
+                    "message": Message.objects.filter(mailing=mailing).last(),
+                    "number_of_clients": len(Client.objects.filter(mailing=mailing).all()),
+                    "number_of_times": len(Log.objects.filter(mailing=mailing).all()),
+                    "last_time": Log.objects.filter(mailing=mailing).last(),
+                }
+                if mailing.status == 'Ready':
+                    result['ready'] = True
+                if mailing.status == 'Finished':
+                    finished_list.append(result)
+                else:
+                    result_list.append(result)
         context["mailing_list"] = result_list
+        context["finished_list"] = finished_list
         return context
+
+
+def mailing_go(request, pk):
+    mailing_execution(pk)
+    return redirect('mailing_list')

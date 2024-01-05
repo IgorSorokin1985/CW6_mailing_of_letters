@@ -1,32 +1,43 @@
 <a name="statistic"></a>
+<h1 class="container text-center pt-5 mb-5">
+    Our Statistic
+</h1>
+
 <div class="container mt-5">
     <table class="table">
         <thead>
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">First</th>
-            <th scope="col">Last</th>
-            <th scope="col">Handle</th>
+            <th scope="col"></th>
+            <th scope="col">Significative</th>
+            <th scope="col">Number</th>
+
         </tr>
         </thead>
         <tbody>
         <tr>
             <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
+            <td>Number of Users</td>
+            <td>{{ number_users }}</td>
+
         </tr>
         <tr>
             <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
+            <td>Number of finished mailings</td>
+            <td>{{ number_mailings }}</td>
+
         </tr>
         <tr>
             <th scope="row">3</th>
-            <td colspan="2">Larry the Bird</td>
-            <td>@twitter</td>
+            <td>Number of clients for mailings</td>
+            <td>{{ number_clients }}</td>
         </tr>
+
+        <tr>
+            <th scope="row"></th>
+            <th>Conclusion</th>
+            <th>You should work with us!!!</th>
+        </tr>
+
         </tbody>
     </table>
 </div>

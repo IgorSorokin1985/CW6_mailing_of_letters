@@ -11,11 +11,12 @@ from client.forms import ClientForm
 from django.forms import inlineformset_factory
 from django.shortcuts import redirect
 from mailing.utils import check_status_mailing, mailing_execution
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 # Create your views here.
 
 
-class MailingCreateView(CreateView):
+class MailingCreateView(LoginRequiredMixin, CreateView):
     model = Mailing
     form_class = MailingForm
     template_name = 'main/mailing_form.html'
@@ -61,7 +62,7 @@ class MailingCreateView(CreateView):
         return context_data
 
 
-class MailingDetailView(DetailView):
+class MailingDetailView(LoginRequiredMixin, DetailView):
     model = Mailing
     template_name = 'main/mailing_info.html'
 
@@ -73,7 +74,7 @@ class MailingDetailView(DetailView):
         return context
 
 
-class MailingUpdateView(UpdateView):
+class MailingUpdateView(LoginRequiredMixin, UpdateView):
     model = Mailing
     form_class = MailingForm
     template_name = 'main/mailing_form.html'
@@ -117,15 +118,16 @@ class MailingUpdateView(UpdateView):
         return context_data
 
 
-class MailingDeleteView(DeleteView):
+class MailingDeleteView(LoginRequiredMixin, DeleteView):
     model = Mailing
     template_name = 'main/mailing_confirm_delete.html'
     success_url = reverse_lazy('mailing_list')
 
 
-class MailingListView(ListView):
+class MailingListView(LoginRequiredMixin, ListView):
     model = Mailing
     template_name = 'main/mailing_list.html'
+
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -166,6 +168,13 @@ def mailing_finish(request, pk):
     mailing.status = 'Finished'
     mailing.save()
     return redirect('mailing_list')
+
+
+def mailing_cancel(request, pk):
+    mailing = Mailing.objects.get(pk=pk)
+    mailing.status = 'Canceled'
+    mailing.save()
+    return redirect('moderator_personal_area')
 
 
 def mailing_again(request, pk):

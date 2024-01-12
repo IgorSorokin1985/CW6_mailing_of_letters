@@ -15,6 +15,9 @@ from django.utils.http import urlsafe_base64_decode
 from django.core.mail import send_mail
 from config.settings import EMAIL_HOST_USER
 from mailing.models import Mailing
+from message.models import Message
+from client.models import Client
+from log.models import Log
 import random
 
 # Create your views here.
@@ -87,12 +90,6 @@ class UserDetailView(DetailView):
     def get_object(self, queryset=None):
         return self.request.user
 
-    #def get_context_data(self, *, object_list=None, **kwargs):
-    #    context = super().get_context_data(**kwargs)
-    #    context["mailing"] = Mailing.objects.filter(user=self.object).all()
-    #    print(context["mailing"])
-    #    return context
-
 
 def forgot_password(request):
     if request.method == 'POST':
@@ -111,9 +108,50 @@ def forgot_password(request):
             return redirect(reverse('login'))
         except Exception:
             message = 'We can not find user with this email'
-            contex = {
+            context = {
                 'message': message
             }
-            return render(request, 'users/forgot_password.html', contex)
+            return render(request, 'users/forgot_password.html', context)
     else:
         return render(request, 'users/forgot_password.html')
+
+
+def moderator_personal_area(request):
+    mailing_list = sorted(Mailing.objects.all(), key=lambda object: object.pk, reverse=True)
+    finished_list = []
+    result_list = []
+    if len(mailing_list) > 0:
+        for mailing in mailing_list:
+            result = {
+                "mailing": mailing,
+                "message": Message.objects.filter(mailing=mailing).last(),
+                "number_of_clients": len(Client.objects.filter(mailing=mailing).all()),
+                "number_of_times": len(Log.objects.filter(mailing=mailing).all()),
+                "last_time": Log.objects.filter(mailing=mailing).last(),
+            }
+            if mailing.status == 'Ready':
+                result['ready'] = True
+            if mailing.status == 'Finished' or mailing.status == 'Canceled':
+                finished_list.append(result)
+            else:
+                result_list.append(result)
+    context = {
+        "mailing_list": result_list,
+        "finished_list": finished_list,
+        "users": User.objects.all(),
+    }
+    if len(finished_list) > 0:
+        context["number_finished_mailings"] = len(finished_list)
+    else:
+        context["number_finished_mailings"] = False
+    return render(request, 'users/moderator_personal_area.html', context)
+
+
+def user_change_active(request, pk):
+    user = User.objects.get(pk=pk)
+    if user.is_active:
+        user.is_active = False
+    else:
+        user.is_active = True
+    user.save()
+    return redirect('moderator_personal_area')

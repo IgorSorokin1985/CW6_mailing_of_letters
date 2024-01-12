@@ -1,0 +1,157 @@
+{% extends 'main/base.html' %}
+{% load my_tags%}
+{% block content %}
+<div>
+
+    <h1 class="container text-center pt-5 mb-5">
+        List of active mailings
+    </h1>
+
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">pk</th>
+                <th scope="col">Name of Mailing</th>
+                <th scope="col">Next date</th>
+                <th scope="col">Status</th>
+                <th scope="col">Message title</th>
+                <th scope="col">User</th>
+
+                <th scope="col">Last time</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for object in mailing_list %}
+            <tr>
+                <th scope="row">{{ object.mailing.pk }}</th>
+                <td>{{ object.mailing.name }}</td>
+                <td>{{ object.mailing.data_mailing }}</td>
+                <td>{{ object.mailing.status }}</td>
+                <td>{{ object.message.title }}</td>
+                <td>{{ object.mailing.user }}</td>
+                <td>{{ object.last_time.datatime }}</td>
+                <th>
+                    <a href="{% url 'mailing_info' object.mailing.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">View
+                    </a>
+                    <a href="{% url 'mailing_cancel' object.mailing.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">Cancel
+                    </a>
+                </th>
+
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+    {% if number_finished_mailings %}
+    <div class="container mb-5 mt-5">
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        List of finished and canceled mailings (Total - {{ number_finished_mailings }} mailings)
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">pk</th>
+                                <th scope="col">Name of Mailing</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Message title</th>
+                                <th scope="col">User</th>
+                                <th scope="col">Number of clients</th>
+                                <th scope="col">Number of times</th>
+                                <th scope="col">Last time</th>
+                                <th scope="col">Action</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for object in finished_list %}
+                            <tr>
+                                <th scope="row">{{ object.mailing.pk }}</th>
+                                <td>{{ object.mailing.name }}</td>
+                                <td>{{ object.mailing.status }}</td>
+                                <td>{{ object.message.title }}</td>
+                                <td>{{ object.mailing.user }}</td>
+                                <td>{{ object.number_of_clients }}</td>
+                                <td>{{ object.number_of_times }}</td>
+                                <td>{{ object.last_time.datatime }}</td>
+                                <th>
+                                    <a href="{% url 'mailing_info' object.mailing.pk %}" type="button"
+                                       class="btn btn-sm btn-outline-secondary">View
+                                    </a>
+                                </th>
+
+                            </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+    {% endif %}
+
+    <div class="container">
+        <h1 class="container text-center pt-5 mb-5">
+            List of Users
+        </h1>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">pk</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Number of mailings</th>
+                <th scope="col">Active</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+            <tr>
+                <th scope="row">{{ user.pk }}</th>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>number of mailings</td>
+                <td>{{ user.is_active }}</td>
+                <th>
+                    <a href="#" type="button"
+                       class="btn btn-sm btn-outline-secondary">View
+                    </a>
+                    <a href="{% url 'user_change_active' user.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">
+                        {% if user.is_active %}
+                        Deactivate
+                        {% else %}
+                        Activate
+                        {% endif %}
+                    </a>
+                </th>
+
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+{% endblock %}

@@ -149,9 +149,27 @@ class MailingListView(ListView):
                     result_list.append(result)
         context["mailing_list"] = result_list
         context["finished_list"] = finished_list
+        if len(finished_list) > 0:
+            context["number_finished_mailings"] = len(finished_list)
+        else:
+            context["number_finished_mailings"] = False
         return context
 
 
 def mailing_go(request, pk):
     mailing_execution(pk)
+    return redirect('mailing_list')
+
+
+def mailing_finish(request, pk):
+    mailing = Mailing.objects.get(pk=pk)
+    mailing.status = 'Finished'
+    mailing.save()
+    return redirect('mailing_list')
+
+
+def mailing_again(request, pk):
+    mailing = Mailing.objects.get(pk=pk)
+    mailing.status = 'Ready'
+    mailing.save()
     return redirect('mailing_list')

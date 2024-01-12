@@ -8,26 +8,10 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 from django.core.management.base import BaseCommand
 from django_apscheduler.jobstores import DjangoJobStore
-from django_apscheduler.models import DjangoJobExecution
-from django_apscheduler import util
 from mailing.models import Mailing
-from mailing.utils import mailing_execution
+from mailing.utils import send_ready_mailings
 
 logger = logging.getLogger(__name__)
-
-
-def send_ready_mailings():
-    utc = pytz.UTC
-
-    now = datetime.datetime.now().replace(tzinfo=utc)
-
-    mailings = Mailing.objects.filter(status='Ready').all()
-
-    for mailing in mailings:
-        datetime_mailing = mailing.data_mailing.replace(tzinfo=utc)
-        if now > datetime_mailing:
-            mailing_execution(mailing.pk)
-    print('apscheduler work again')
 
 
 class Command(BaseCommand):

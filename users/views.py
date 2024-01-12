@@ -67,7 +67,7 @@ class RegisterView(CreateView):
         #    from_email=EMAIL_HOST_USER,
         #    recipient_list=[new_user.email]
         #)
-        return super().form_valid(form)
+        return redirect(reverse('login'))
 
 
 class UserUpdateView(UpdateView):

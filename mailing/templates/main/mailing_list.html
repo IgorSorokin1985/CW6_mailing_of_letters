@@ -40,15 +40,16 @@
                     <a href="{% url 'mailing_info' object.mailing.pk %}" type="button"
                        class="btn btn-sm btn-outline-secondary">View
                     </a>
-                    <a href="{% url 'mailing_update' object.mailing.pk %}" type="button"
-                       class="btn btn-sm btn-outline-secondary">Edit
-                    </a>
                     <a href="{% url 'mailing_delete' object.mailing.pk %}" type="button"
                        class="btn btn-sm btn-outline-secondary">Delete
+                    </a>
+                    <a href="{% url 'mailing_finish' object.mailing.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">Finish
                     </a>
 
                 </th>
                 <th>
+
 
                     {% if object.ready %}
                     <form action="{% url 'mailing_go' object.mailing.pk %}" method="post">
@@ -72,57 +73,70 @@
                href="{% url 'mailing_form' %}" role="button">Create new mailing</a>
         </div>
     </div>
+    {% if number_finished_mailings %}
+    <div class="container mb-5 mt-5">
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        List of finished mailings (Total - {{ number_finished_mailings }} mailings)
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">pk</th>
+                                <th scope="col">Name of Mailing</th>
 
-    <h1 class="container text-center pt-5 mb-5">
-        List of finished mailings
-    </h1>
+                                <th scope="col">Status</th>
+                                <th scope="col">Message title</th>
+                                <th scope="col">Number of clients</th>
+                                <th scope="col">Number of times</th>
+                                <th scope="col">Last time</th>
+                                <th scope="col">Action</th>
 
-    <div class="container">
-        <table class="table">
-            <thead>
-            <tr>
-                <th scope="col">pk</th>
-                <th scope="col">Name of Mailing</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for object in finished_list %}
+                            <tr>
+                                <th scope="row">{{ object.mailing.pk }}</th>
+                                <td>{{ object.mailing.name }}</td>
 
-                <th scope="col">Status</th>
-                <th scope="col">Message title</th>
-                <th scope="col">Number of clients</th>
-                <th scope="col">Number of times</th>
-                <th scope="col">Last time</th>
-                <th scope="col">Action</th>
-
-            </tr>
-            </thead>
-            <tbody>
-            {% for object in finished_list %}
-            <tr>
-                <th scope="row">{{ object.mailing.pk }}</th>
-                <td>{{ object.mailing.name }}</td>
-
-                <td>{{ object.mailing.status }}</td>
-                <td>{{ object.message.title }}</td>
-                <td>{{ object.number_of_clients }}</td>
-                <td>{{ object.number_of_times }}</td>
-                <td>{{ object.last_time.datatime }}</td>
-                <th>
+                                <td>{{ object.mailing.status }}</td>
+                                <td>{{ object.message.title }}</td>
+                                <td>{{ object.number_of_clients }}</td>
+                                <td>{{ object.number_of_times }}</td>
+                                <td>{{ object.last_time.datatime }}</td>
+                                <th>
 
 
-                    <a href="{% url 'mailing_info' object.mailing.pk %}" type="button"
-                       class="btn btn-sm btn-outline-secondary">View
-                    </a>
+                                    <a href="{% url 'mailing_info' object.mailing.pk %}" type="button"
+                                       class="btn btn-sm btn-outline-secondary">View
+                                    </a>
+                                    <a href="{% url 'mailing_again' object.mailing.pk %}" type="button"
+                                       class="btn btn-sm btn-outline-secondary">Again
+                                    </a>
 
-                </th>
+                                </th>
 
-            </tr>
-            {% endfor %}
+                            </tr>
+                            {% endfor %}
 
-            </tbody>
-        </table>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
 
     </div>
+    {% endif %}
 
-
-</div>
-
-
-{% endblock %}
+    {% endblock %}

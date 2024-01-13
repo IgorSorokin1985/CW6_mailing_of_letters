@@ -98,7 +98,6 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
             client_formset.instance = self.object
             client_formset.save()
             self.object.status = check_status_mailing(self.object)
-
         else:
             return self.form_invalid(form)
 
@@ -145,7 +144,7 @@ class MailingListView(LoginRequiredMixin, ListView):
                 }
                 if mailing.status == 'Ready':
                     result['ready'] = True
-                if mailing.status == 'Finished':
+                if mailing.status in ['Finished', 'Canceled']:
                     finished_list.append(result)
                 else:
                     result_list.append(result)
@@ -160,25 +159,28 @@ class MailingListView(LoginRequiredMixin, ListView):
 
 def mailing_go(request, pk):
     mailing_execution(pk)
-    return redirect('mailing_list')
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 def mailing_finish(request, pk):
     mailing = Mailing.objects.get(pk=pk)
     mailing.status = 'Finished'
     mailing.save()
-    return redirect('mailing_list')
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
-def mailing_cancel(request, pk):
+def mailing_change_status(request, pk):
     mailing = Mailing.objects.get(pk=pk)
-    mailing.status = 'Canceled'
+    if mailing.status == 'Canceled':
+        mailing.status = check_status_mailing(mailing)
+    else:
+        mailing.status = 'Canceled'
     mailing.save()
-    return redirect('moderator_personal_area')
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 def mailing_again(request, pk):
     mailing = Mailing.objects.get(pk=pk)
-    mailing.status = 'Ready'
+    mailing.status = check_status_mailing(mailing)
     mailing.save()
-    return redirect('mailing_list')
+    return redirect(request.META.get('HTTP_REFERER'))

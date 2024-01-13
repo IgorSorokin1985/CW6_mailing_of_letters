@@ -15,6 +15,7 @@
                         <p class="card-text">Name of mailing - {{ object.name }}</p>
                         <p class="card-text">Date of mailing - {{ object.data_mailing }}</p>
                         <p class="card-text">Periodicity - {{ object.periodicity }}</p>
+                        <p class="card-text">Status - {{ object.status }}</p>
                     </div>
                     <div class="card-footer"></div>
                 </div>
@@ -36,6 +37,17 @@
                     <div class="card-footer"></div>
                 </div>
                 <div class="col d-flex align-items-center justify-content-center justify-content-md-between  mb-5">
+                    {% if perms.mailing.change_mailing %}
+                    <div>
+                        <a class="btn btn-primary btn-lg px-4 gap-3 " href="{% url 'mailing_change_status' object.pk %}" role="button">
+                            {% if object.status == 'Canceled' %}
+                            Activate mailing
+                            {% else %}
+                            Cancel mailing
+                            {% endif %}
+                        </a>
+                    </div>
+                    {% else %}
                     <div>
 
 
@@ -52,6 +64,7 @@
                         <a class="btn btn-primary btn-lg px-4 gap-3 " href="{% url 'mailing_list' %}" role="button">Snow
                             my mailings</a>
                     </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="col-4">

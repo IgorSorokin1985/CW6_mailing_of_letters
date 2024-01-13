@@ -1,0 +1,52 @@
+{% extends 'main/base.html' %}
+{% load my_tags%}
+{% block content %}
+<div>
+
+    <div class="container">
+        <h1 class="container text-center pt-5 mb-5">
+            List of Users
+        </h1>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">pk</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Number of mailings</th>
+                <th scope="col">Active</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for object in objects %}
+            <tr>
+                <th scope="row">{{ user.pk }}</th>
+                <td>{{ object.user.name }}</td>
+                <td>{{ object.user.email }}</td>
+                <td>{{ object.number_of_mailings }}</td>
+                <td>{{ object.user.is_active }}</td>
+                <th>
+                    <a href="{% url 'profile' object.user.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">View
+                    </a>
+                    <a href="{% url 'user_change_active' user.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">
+                        {% if object.user.is_active %}
+                        Deactivate
+                        {% else %}
+                        Activate
+                        {% endif %}
+                    </a>
+                </th>
+
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+{% endblock %}

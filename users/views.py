@@ -82,13 +82,37 @@ class UserUpdateView(UpdateView):
         return self.request.user
 
 
-class UserDetailView(DetailView):
-    model = User
-    template_name = 'main/user_info.html'
-    success_url = reverse_lazy('profile')
-
-    def get_object(self, queryset=None):
-        return self.request.user
+def user_profile(request, pk):
+    user = User.objects.get(pk=pk)
+    mailing_list = sorted(Mailing.objects.filter(user=user).all(), key=lambda object: object.pk,
+                          reverse=True)
+    finished_list = []
+    result_list = []
+    if len(mailing_list) > 0:
+        for mailing in mailing_list:
+            result = {
+                "mailing": mailing,
+                "message": Message.objects.filter(mailing=mailing).last(),
+                "number_of_clients": len(Client.objects.filter(mailing=mailing).all()),
+                "number_of_times": len(Log.objects.filter(mailing=mailing).all()),
+                "last_time": Log.objects.filter(mailing=mailing).last(),
+            }
+            if mailing.status == 'Ready':
+                result['ready'] = True
+            if mailing.status in ['Finished', 'Canceled']:
+                finished_list.append(result)
+            else:
+                result_list.append(result)
+    context = {
+        "object": user,
+        "mailing_list": result_list,
+        "finished_list": finished_list
+    }
+    if len(finished_list) > 0:
+        context["number_finished_mailings"] = len(finished_list)
+    else:
+        context["number_finished_mailings"] = False
+    return render(request, 'users/user_info.html', context)
 
 
 def forgot_password(request):
@@ -116,7 +140,7 @@ def forgot_password(request):
         return render(request, 'users/forgot_password.html')
 
 
-def moderator_personal_area(request):
+def moderator_mailings(request):
     mailing_list = sorted(Mailing.objects.all(), key=lambda object: object.pk, reverse=True)
     finished_list = []
     result_list = []
@@ -129,22 +153,31 @@ def moderator_personal_area(request):
                 "number_of_times": len(Log.objects.filter(mailing=mailing).all()),
                 "last_time": Log.objects.filter(mailing=mailing).last(),
             }
-            if mailing.status == 'Ready':
-                result['ready'] = True
-            if mailing.status == 'Finished' or mailing.status == 'Canceled':
+            if mailing.status in ['Finished', 'Canceled']:
                 finished_list.append(result)
             else:
                 result_list.append(result)
     context = {
         "mailing_list": result_list,
         "finished_list": finished_list,
-        "users": User.objects.all(),
     }
     if len(finished_list) > 0:
         context["number_finished_mailings"] = len(finished_list)
     else:
         context["number_finished_mailings"] = False
-    return render(request, 'users/moderator_personal_area.html', context)
+    return render(request, 'users/moderator_mailings.html', context)
+
+
+def moderator_users(request):
+    users = User.objects.all()
+    objects = []
+    for user in users:
+        number_of_mailings = len(Mailing.objects.filter(user=user).all())
+        objects.append({"user": user, "number_of_mailings": number_of_mailings})
+    context = {
+        "objects": objects
+    }
+    return render(request, 'users/moderator_users.html', context)
 
 
 def user_change_active(request, pk):
@@ -154,4 +187,4 @@ def user_change_active(request, pk):
     else:
         user.is_active = True
     user.save()
-    return redirect('moderator_personal_area')
+    return redirect(request.META.get('HTTP_REFERER'))

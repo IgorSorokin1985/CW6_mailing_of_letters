@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'message',
     'users',
     'article',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -154,3 +155,5 @@ AUTH_USER_MODEL = 'users.User'
 
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
+
+APSCHEDULER_RUN_NOW_TIMEOUT = 25

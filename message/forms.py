@@ -6,7 +6,6 @@ class MessageFrom(forms.ModelForm):
 
     class Meta:
         model = Message
-        #exclude = ('mailing',)
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):

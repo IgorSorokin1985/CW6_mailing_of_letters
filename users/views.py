@@ -18,6 +18,8 @@ from mailing.models import Mailing
 from message.models import Message
 from client.models import Client
 from log.models import Log
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import permission_required
 import random
 
 # Create your views here.
@@ -73,7 +75,7 @@ class RegisterView(CreateView):
         return redirect(reverse('login'))
 
 
-class UserUpdateView(UpdateView):
+class UserUpdateView(LoginRequiredMixin, UpdateView):
     model = User
     success_url = reverse_lazy('user_update')
     form_class = UserForm
@@ -82,6 +84,7 @@ class UserUpdateView(UpdateView):
         return self.request.user
 
 
+@permission_required('mailing.change_mailing')
 def user_profile(request, pk):
     user = User.objects.get(pk=pk)
     mailing_list = sorted(Mailing.objects.filter(user=user).all(), key=lambda object: object.pk,
@@ -140,6 +143,7 @@ def forgot_password(request):
         return render(request, 'users/forgot_password.html')
 
 
+@permission_required('mailing.change_mailing')
 def moderator_mailings(request):
     mailing_list = sorted(Mailing.objects.all(), key=lambda object: object.pk, reverse=True)
     finished_list = []
@@ -168,6 +172,7 @@ def moderator_mailings(request):
     return render(request, 'users/moderator_mailings.html', context)
 
 
+@permission_required('mailing.change_mailing')
 def moderator_users(request):
     users = User.objects.all()
     objects = []
@@ -180,6 +185,7 @@ def moderator_users(request):
     return render(request, 'users/moderator_users.html', context)
 
 
+@permission_required('mailing.change_mailing')
 def user_change_active(request, pk):
     user = User.objects.get(pk=pk)
     if user.is_active:

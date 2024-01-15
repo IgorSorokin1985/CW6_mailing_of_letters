@@ -5,6 +5,7 @@ from mailing.models import Mailing
 from client.models import Client
 import random
 
+
 # Create your views here.
 def index(request):
     articles = Article.objects.all()

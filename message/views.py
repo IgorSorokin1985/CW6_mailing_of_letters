@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from message.models import Message
 from django.urls import reverse_lazy, reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
@@ -15,12 +16,12 @@ class MessageCreateView(CreateView):
         return reverse('message_info', args=[self.object.pk])
 
 
-class MessageDetailView(DetailView):
+class MessageDetailView(LoginRequiredMixin, DetailView):
     model = Message
     template_name = 'main/message_info.html'
 
 
-class MessageUpdateView(UpdateView):
+class MessageUpdateView(LoginRequiredMixin, UpdateView):
     model = Message
     fields = ['title', 'body', 'mailing']
     template_name = 'main/message_form.html'
@@ -29,8 +30,7 @@ class MessageUpdateView(UpdateView):
         return reverse('message_info', args=[self.object.pk])
 
 
-class MessageDeleteView(DeleteView):
+class MessageDeleteView(LoginRequiredMixin, DeleteView):
     model = Message
     template_name = 'main/message_confirm_delete.html'
     success_url = reverse_lazy('index')
-

@@ -21,7 +21,7 @@
             <tbody>
             {% for object in objects %}
             <tr>
-                <th scope="row">{{ user.pk }}</th>
+                <th scope="row">{{ object.user.pk }}</th>
                 <td>{{ object.user.name }}</td>
                 <td>{{ object.user.email }}</td>
                 <td>{{ object.number_of_mailings }}</td>
@@ -49,4 +49,5 @@
     </div>
 
 </div>
+
 {% endblock %}

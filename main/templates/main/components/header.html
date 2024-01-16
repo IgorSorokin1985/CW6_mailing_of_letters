@@ -7,10 +7,10 @@
             <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="{% url 'index' %}" class="nav-link px-2 link-secondary">Home</a></li>
                 <li><a href="{% url 'index' %}#about_us" class="nav-link px-2">About us</a></li>
-                <li><a href="{% url 'index' %}#articles" class="nav-link px-2">Articles</a></li>
+                <li><a href="{% url 'article_list' %}" class="nav-link px-2">Articles</a></li>
                 <li><a href="{% url 'index' %}#statistic" class="nav-link px-2">Statistic</a></li>
+                <li><a href="{% url 'mailing_list' %}" class="nav-link px-2">Mailings</a></li>
                 {% if perms.mailing.change_mailing %}
-                <li><a href="{% url 'moderator_mailings' %}" class="nav-link px-2">Mailings</a></li>
                 <li><a href="{% url 'moderator_users' %}" class="nav-link px-2">Users</a></li>
                 {% endif %}
 

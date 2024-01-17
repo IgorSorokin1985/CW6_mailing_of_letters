@@ -149,6 +149,7 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
 class MailingListView(LoginRequiredMixin, ListView):
     model = Mailing
     template_name = 'mailing/mailing_list.html'
+    ordering = ['data_mailing']
 
     def get_queryset(self):
         mailings_list = super().get_queryset()

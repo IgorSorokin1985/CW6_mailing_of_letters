@@ -40,6 +40,12 @@ DATABASES = {
 ```
 
 ## Environment variables
+For work Mailing service it is need create file ".env" with information about your email service and other. Example this file you can see as ".env.sample"
+```
+EMAIL=
+EMAIL_PASSWORD=
+```
+
 ## Loading data
 ## Creating a superuser
 ## Creating a user

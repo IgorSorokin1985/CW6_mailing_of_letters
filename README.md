@@ -39,6 +39,14 @@ DATABASES = {
     }
 }
 ```
+Then you should make migrations with these commands
+```
+python manage.py makemigrations
+```
+If all is ok then
+```
+python manage.py migrate
+```
 
 ## Environment variables
 For work Mailing service it is need create file ".env" with information about your email service and other. Example this file you can see as ".env.sample"

@@ -18,7 +18,10 @@ from mailing.models import Mailing
 from message.models import Message
 from client.models import Client
 from log.models import Log
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import permission_required
 import random
+from mailing.utils import sorting_list_mailings
 
 # Create your views here.
 
@@ -64,16 +67,10 @@ class RegisterView(CreateView):
     def form_valid(self, form):
         new_user = form.save()
         send_email_for_verify(self.request, new_user)
-        #send_mail(
-        #    subject='Congratulations',
-        #    message='You registered',
-        #    from_email=EMAIL_HOST_USER,
-        #    recipient_list=[new_user.email]
-        #)
         return redirect(reverse('login'))
 
 
-class UserUpdateView(UpdateView):
+class UserUpdateView(LoginRequiredMixin, UpdateView):
     model = User
     success_url = reverse_lazy('user_update')
     form_class = UserForm
@@ -82,36 +79,13 @@ class UserUpdateView(UpdateView):
         return self.request.user
 
 
+@permission_required('mailing.change_mailing')
 def user_profile(request, pk):
     user = User.objects.get(pk=pk)
     mailing_list = sorted(Mailing.objects.filter(user=user).all(), key=lambda object: object.pk,
                           reverse=True)
-    finished_list = []
-    result_list = []
-    if len(mailing_list) > 0:
-        for mailing in mailing_list:
-            result = {
-                "mailing": mailing,
-                "message": Message.objects.filter(mailing=mailing).last(),
-                "number_of_clients": len(Client.objects.filter(mailing=mailing).all()),
-                "number_of_times": len(Log.objects.filter(mailing=mailing).all()),
-                "last_time": Log.objects.filter(mailing=mailing).last(),
-            }
-            if mailing.status == 'Ready':
-                result['ready'] = True
-            if mailing.status in ['Finished', 'Canceled']:
-                finished_list.append(result)
-            else:
-                result_list.append(result)
-    context = {
-        "object": user,
-        "mailing_list": result_list,
-        "finished_list": finished_list
-    }
-    if len(finished_list) > 0:
-        context["number_finished_mailings"] = len(finished_list)
-    else:
-        context["number_finished_mailings"] = False
+    context = sorting_list_mailings(mailing_list)
+    context["object"] = user
     return render(request, 'users/user_info.html', context)
 
 
@@ -140,34 +114,7 @@ def forgot_password(request):
         return render(request, 'users/forgot_password.html')
 
 
-def moderator_mailings(request):
-    mailing_list = sorted(Mailing.objects.all(), key=lambda object: object.pk, reverse=True)
-    finished_list = []
-    result_list = []
-    if len(mailing_list) > 0:
-        for mailing in mailing_list:
-            result = {
-                "mailing": mailing,
-                "message": Message.objects.filter(mailing=mailing).last(),
-                "number_of_clients": len(Client.objects.filter(mailing=mailing).all()),
-                "number_of_times": len(Log.objects.filter(mailing=mailing).all()),
-                "last_time": Log.objects.filter(mailing=mailing).last(),
-            }
-            if mailing.status in ['Finished', 'Canceled']:
-                finished_list.append(result)
-            else:
-                result_list.append(result)
-    context = {
-        "mailing_list": result_list,
-        "finished_list": finished_list,
-    }
-    if len(finished_list) > 0:
-        context["number_finished_mailings"] = len(finished_list)
-    else:
-        context["number_finished_mailings"] = False
-    return render(request, 'users/moderator_mailings.html', context)
-
-
+@permission_required('mailing.change_mailing')
 def moderator_users(request):
     users = User.objects.all()
     objects = []
@@ -180,6 +127,7 @@ def moderator_users(request):
     return render(request, 'users/moderator_users.html', context)
 
 
+@permission_required('mailing.change_mailing')
 def user_change_active(request, pk):
     user = User.objects.get(pk=pk)
     if user.is_active:

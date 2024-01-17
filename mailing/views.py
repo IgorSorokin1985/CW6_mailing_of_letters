@@ -10,8 +10,10 @@ from message.forms import MessageFrom
 from client.forms import ClientForm
 from django.forms import inlineformset_factory
 from django.shortcuts import redirect
-from mailing.utils import check_status_mailing, mailing_execution
+from mailing.utils import check_status_mailing, mailing_execution, sorting_list_mailings
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import permission_required, login_required
+from django.http import Http404
 
 # Create your views here.
 
@@ -19,7 +21,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 class MailingCreateView(LoginRequiredMixin, CreateView):
     model = Mailing
     form_class = MailingForm
-    template_name = 'main/mailing_form.html'
+    template_name = 'mailing/mailing_form.html'
 
     def get_success_url(self):
         return reverse('mailing_list')
@@ -42,7 +44,6 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
             client_formset.instance = self.object
             client_formset.save()
             self.object.status = check_status_mailing(self.object)
-
         else:
             return self.form_invalid(form)
 
@@ -64,7 +65,14 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
 
 class MailingDetailView(LoginRequiredMixin, DetailView):
     model = Mailing
-    template_name = 'main/mailing_info.html'
+    template_name = 'mailing/mailing_info.html'
+
+    def get_object(self, queryset=None):
+        mailing = super().get_object()
+        if mailing.user == self.request.user or self.request.user.groups.filter(name='moderator').exists():
+            return mailing
+        else:
+            raise Http404
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -77,7 +85,14 @@ class MailingDetailView(LoginRequiredMixin, DetailView):
 class MailingUpdateView(LoginRequiredMixin, UpdateView):
     model = Mailing
     form_class = MailingForm
-    template_name = 'main/mailing_form.html'
+    template_name = 'mailing/mailing_form.html'
+
+    def get_object(self, queryset=None):
+        mailing = super().get_object()
+        if mailing.user == self.request.user:
+            return mailing
+        else:
+            raise Http404
 
     def get_success_url(self):
         return reverse('mailing_list')
@@ -97,7 +112,8 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
             mailing_formset.save()
             client_formset.instance = self.object
             client_formset.save()
-            self.object.status = check_status_mailing(self.object)
+            if self.object.status != 'Canceled':
+                self.object.status = check_status_mailing(self.object)
         else:
             return self.form_invalid(form)
 
@@ -119,56 +135,55 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
 
 class MailingDeleteView(LoginRequiredMixin, DeleteView):
     model = Mailing
-    template_name = 'main/mailing_confirm_delete.html'
+    template_name = 'mailing/mailing_confirm_delete.html'
     success_url = reverse_lazy('mailing_list')
+
+    def get_object(self, queryset=None):
+        mailing = super().get_object()
+        if mailing.user == self.request.user:
+            return mailing
+        else:
+            raise Http404
 
 
 class MailingListView(LoginRequiredMixin, ListView):
     model = Mailing
-    template_name = 'main/mailing_list.html'
+    template_name = 'mailing/mailing_list.html'
 
+    def get_queryset(self):
+        mailings_list = super().get_queryset()
+        if self.request.user.groups.filter(name='moderator').exists():
+            return mailings_list
+        else:
+            return mailings_list.filter(user=self.request.user)
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        mailing_list = sorted(Mailing.objects.filter(user=self.request.user).all(), key=lambda object: object.pk, reverse=True)
-        finished_list = []
-        result_list = []
-        if len(mailing_list) > 0:
-            for mailing in mailing_list:
-                result = {
-                    "mailing": mailing,
-                    "message": Message.objects.filter(mailing=mailing).last(),
-                    "number_of_clients": len(Client.objects.filter(mailing=mailing).all()),
-                    "number_of_times": len(Log.objects.filter(mailing=mailing).all()),
-                    "last_time": Log.objects.filter(mailing=mailing).last(),
-                }
-                if mailing.status == 'Ready':
-                    result['ready'] = True
-                if mailing.status in ['Finished', 'Canceled']:
-                    finished_list.append(result)
-                else:
-                    result_list.append(result)
-        context["mailing_list"] = result_list
-        context["finished_list"] = finished_list
-        if len(finished_list) > 0:
-            context["number_finished_mailings"] = len(finished_list)
-        else:
-            context["number_finished_mailings"] = False
+        context = sorting_list_mailings(super().get_context_data(**kwargs)["object_list"])
         return context
 
 
+@login_required
 def mailing_go(request, pk):
-    mailing_execution(pk)
-    return redirect(request.META.get('HTTP_REFERER'))
+    mailing = Mailing.objects.get(pk=pk)
+    if mailing.user == request.user:
+        mailing_execution(mailing)
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        raise Http404
 
 
+@login_required
 def mailing_finish(request, pk):
     mailing = Mailing.objects.get(pk=pk)
-    mailing.status = 'Finished'
-    mailing.save()
-    return redirect(request.META.get('HTTP_REFERER'))
+    if mailing.user == request.user:
+        mailing.status = 'Finished'
+        mailing.save()
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        raise Http404
 
 
+@permission_required('mailing.change_mailing')
 def mailing_change_status(request, pk):
     mailing = Mailing.objects.get(pk=pk)
     if mailing.status == 'Canceled':
@@ -179,8 +194,12 @@ def mailing_change_status(request, pk):
     return redirect(request.META.get('HTTP_REFERER'))
 
 
+@login_required
 def mailing_again(request, pk):
     mailing = Mailing.objects.get(pk=pk)
-    mailing.status = check_status_mailing(mailing)
-    mailing.save()
-    return redirect(request.META.get('HTTP_REFERER'))
+    if mailing.user == request.user:
+        mailing.status = check_status_mailing(mailing)
+        mailing.save()
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        raise Http404

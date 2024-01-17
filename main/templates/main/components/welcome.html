@@ -9,7 +9,7 @@
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
             {% if user.is_authenticated %}
             {% if perms.mailing.change_mailing %}
-            <a class="btn btn-primary btn-lg px-4 gap-3" href="{% url 'moderator_mailings' %}" role="button">All mailings</a>
+            <a class="btn btn-primary btn-lg px-4 gap-3" href="{% url 'mailing_list' %}" role="button">All mailings</a>
             <a class="btn btn-primary btn-lg px-4 gap-3" href="{% url 'moderator_users' %}" role="button">All users</a>
             {% else %}
             <a class="btn btn-primary btn-lg px-4 gap-3" href="{% url 'mailing_list' %}" role="button">Snow my

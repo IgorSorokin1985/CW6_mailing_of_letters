@@ -21,10 +21,10 @@ def check_status_mailing(mailing):
         return 'Finished'
 
 
-def mailing_execution(mailing_pk):
-    mailing = Mailing.objects.get(pk=mailing_pk)
-    message = Message.objects.get(mailing=mailing_pk)
-    clients = Client.objects.filter(mailing=mailing_pk).all()
+def mailing_execution(mailing):
+    mailing = Mailing.objects.get(pk=mailing.pk)
+    message = Message.objects.get(mailing=mailing.pk)
+    clients = Client.objects.filter(mailing=mailing.pk).all()
     for client in clients:
         print(client.name)
         print(client.email)
@@ -70,3 +70,33 @@ def send_ready_mailings():
         print(f'All mailings with the Ready status have been completed. Total {count} mailings.')
     else:
         print('I did not find mailings with the Ready status. I will try in the near future...')
+
+
+def sorting_list_mailings(mailings_list):
+    finished_list = []
+    result_list = []
+    if len(mailings_list) > 0:
+        for mailing in mailings_list:
+            print(mailing)
+            result = {
+                "mailing": mailing,
+                "message": Message.objects.filter(mailing=mailing).last(),
+                "number_of_clients": len(Client.objects.filter(mailing=mailing).all()),
+                "number_of_times": len(Log.objects.filter(mailing=mailing).all()),
+                "last_time": Log.objects.filter(mailing=mailing).last(),
+            }
+            if mailing.status == 'Ready':
+                result['ready'] = True
+            if mailing.status in ['Finished', 'Canceled']:
+                finished_list.append(result)
+            else:
+                result_list.append(result)
+    context = {
+        "mailing_list": result_list,
+        "finished_list": finished_list,
+    }
+    if len(finished_list) > 0:
+        context["number_finished_mailings"] = len(finished_list)
+    else:
+        context["number_finished_mailings"] = False
+    return context

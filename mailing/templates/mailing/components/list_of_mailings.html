@@ -1,10 +1,7 @@
-{% extends 'main/base.html' %}
-{% load my_tags%}
-{% block content %}
 <div>
 
     <h1 class="container text-center pt-5 mb-5">
-        List of active mailings
+        List of mailings
     </h1>
 
     <div class="container">
@@ -16,10 +13,17 @@
                 <th scope="col">Next date</th>
                 <th scope="col">Status</th>
                 <th scope="col">Message title</th>
+                {% if not perms.mailing.change_mailing %}
+                <th scope="col">Number of clients</th>
+                <th scope="col">Number of times</th>
+                {% else %}
                 <th scope="col">User</th>
-
+                {% endif %}
                 <th scope="col">Last time</th>
                 <th scope="col">Action</th>
+                {% if not perms.mailing.change_mailing %}
+                <th scope="col">Go now</th>
+                {% endif %}
             </tr>
             </thead>
             <tbody>
@@ -30,23 +34,62 @@
                 <td>{{ object.mailing.data_mailing }}</td>
                 <td>{{ object.mailing.status }}</td>
                 <td>{{ object.message.title }}</td>
+                {% if not perms.mailing.change_mailing %}
+                <td>{{ object.number_of_clients }}</td>
+                <td>{{ object.number_of_times }}</td>
+                {% else %}
                 <td>{{ object.mailing.user }}</td>
+                {% endif %}
                 <td>{{ object.last_time.datatime }}</td>
                 <th>
+
+
                     <a href="{% url 'mailing_info' object.mailing.pk %}" type="button"
                        class="btn btn-sm btn-outline-secondary">View
                     </a>
+                    {% if not perms.mailing.change_mailing %}
+                    <a href="{% url 'mailing_delete' object.mailing.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">Delete
+                    </a>
+                    <a href="{% url 'mailing_finish' object.mailing.pk %}" type="button"
+                       class="btn btn-sm btn-outline-secondary">Finish
+                    </a>
+                    {% else %}
                     <a href="{% url 'mailing_change_status' object.mailing.pk %}" type="button"
                        class="btn btn-sm btn-outline-secondary">Cancel
                     </a>
-                </th>
+                    {% endif %}
 
+                </th>
+                {% if not perms.mailing.change_mailing %}
+                <th>
+
+
+                    {% if object.ready %}
+                    <form action="{% url 'mailing_go' object.mailing.pk %}" method="post">
+
+
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-primary" type="submit" value="TEST">GO!!!</button>
+                    </form>
+                    {% endif %}
+
+
+                </th>
+                {% endif %}
             </tr>
             {% endfor %}
 
             </tbody>
         </table>
-
+        <div class="row">
+            {% if not perms.mailing.change_mailing %}
+            <div class="col-3"></div>
+            <a class="btn btn-primary btn-lg px-4 gap-3 mb-3 col-6 d-flex flex-wrap align-items-center justify-content-center"
+               href="{% url 'mailing_form' %}" role="button">Create new mailing
+            </a>
+            {% endif %}
+        </div>
     </div>
     {% if number_finished_mailings %}
     <div class="container mb-5 mt-5">
@@ -55,7 +98,7 @@
                 <h2 class="accordion-header">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        List of finished and canceled mailings (Total - {{ number_finished_mailings }} mailings)
+                        List of finished mailings (Total - {{ number_finished_mailings }} mailings)
                     </button>
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
@@ -67,9 +110,12 @@
                                 <th scope="col">Name of Mailing</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Message title</th>
-                                <th scope="col">User</th>
+                                {% if not perms.mailing.change_mailing %}
                                 <th scope="col">Number of clients</th>
                                 <th scope="col">Number of times</th>
+                                {% else %}
+                                <th scope="col">User</th>
+                                {% endif %}
                                 <th scope="col">Last time</th>
                                 <th scope="col">Action</th>
 
@@ -80,21 +126,34 @@
                             <tr>
                                 <th scope="row">{{ object.mailing.pk }}</th>
                                 <td>{{ object.mailing.name }}</td>
+
                                 <td>{{ object.mailing.status }}</td>
                                 <td>{{ object.message.title }}</td>
-                                <td>{{ object.mailing.user }}</td>
+                                {% if not perms.mailing.change_mailing %}
                                 <td>{{ object.number_of_clients }}</td>
                                 <td>{{ object.number_of_times }}</td>
+                                {% else %}
+                                <td>{{ object.mailing.user }}</td>
+                                {% endif %}
                                 <td>{{ object.last_time.datatime }}</td>
                                 <th>
+
+
                                     <a href="{% url 'mailing_info' object.mailing.pk %}" type="button"
                                        class="btn btn-sm btn-outline-secondary">View
                                     </a>
+                                    {% if not perms.mailing.change_mailing %}
+                                    <a href="{% url 'mailing_again' object.mailing.pk %}" type="button"
+                                       class="btn btn-sm btn-outline-secondary">Again
+                                    </a>
+                                    {% else %}
                                     {% if object.mailing.status == 'Canceled' %}
                                     <a href="{% url 'mailing_change_status' object.mailing.pk %}" type="button"
                                        class="btn btn-sm btn-outline-secondary">Activate
                                     </a>
                                     {% endif %}
+                                    {% endif %}
+
                                 </th>
 
                             </tr>
@@ -111,7 +170,5 @@
 
 
     </div>
-    {% endif %}
-
 </div>
-{% endblock %}
+{% endif %}

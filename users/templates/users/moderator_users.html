@@ -21,7 +21,7 @@
             <tbody>
             {% for object in objects %}
             <tr>
-                <th scope="row">{{ user.pk }}</th>
+                <th scope="row">{{ object.user.pk }}</th>
                 <td>{{ object.user.name }}</td>
                 <td>{{ object.user.email }}</td>
                 <td>{{ object.number_of_mailings }}</td>
@@ -30,7 +30,7 @@
                     <a href="{% url 'profile' object.user.pk %}" type="button"
                        class="btn btn-sm btn-outline-secondary">View
                     </a>
-                    <a href="{% url 'user_change_active' user.pk %}" type="button"
+                    <a href="{% url 'user_change_active' object.user.pk %}" type="button"
                        class="btn btn-sm btn-outline-secondary">
                         {% if object.user.is_active %}
                         Deactivate
@@ -49,4 +49,5 @@
     </div>
 
 </div>
+
 {% endblock %}

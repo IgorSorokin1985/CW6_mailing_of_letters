@@ -74,9 +74,13 @@ There are two groups for staff users - Moderator and Content Manager.
 Only Superuser can add permission in admin panel.
 
 ## Moderator capabilities
+Moderator can view all mailings and users. Moderator can cancel and activate all mailings. Moderator can deactivate and activate all users. Moderator cannot change and delete mailings.
+
 ## Content manager capabilities
+Content manager can add and change articles.
+
 ## Start schedule
-For start automatic sending mailings you should use command
+For start automatic sending mailings you should use command. Apscheduler look all mailings, check which mailings should be sended and send. This checking happens every 10 seconds.
 ```
 pyton manage.py runapscheduler
 ```

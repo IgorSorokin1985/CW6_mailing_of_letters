@@ -61,7 +61,7 @@ CACHE_LOCATION=
 ## Creating a superuser
 For creating superuser you should use command
 ```
-pyton manage.py csu
+python manage.py csu
 ```
 
 ## Group of staff users
@@ -77,11 +77,11 @@ Content manager can add and change articles.
 ## Start schedule
 For starting automatic sending mailings you should use command. Apscheduler look all mailings, check which mailings should be sended and send. This checking happens every 10 seconds.
 ```
-pyton manage.py runapscheduler
+python manage.py runapscheduler
 ```
 
 ## Other commands
 For onetime sending all ready mailings you should use command
 ```
-pyton manage.py runmailings
+python manage.py runmailings
 ```

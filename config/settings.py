@@ -157,3 +157,16 @@ LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 
 APSCHEDULER_RUN_NOW_TIMEOUT = 25
+
+if os.getenv('CACHE_ENABLED') == 'True':
+    CACHE_ENABLED = True
+else:
+    CACHE_ENABLED = False
+
+if CACHE_ENABLED:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": os.getenv('CACHE_LOCATION'),
+        }
+    }

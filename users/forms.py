@@ -54,6 +54,7 @@ class UserForm(UserChangeForm):
     class Meta:
         model = User
         fields = ('email', 'password', 'name', 'lastname', 'company', 'phone', 'birthday', 'country', 'avatar')
+        #widgets = {'birthday': forms.DateTimeInput(attrs={'type': 'date'})}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -143,9 +143,11 @@
                                        class="btn btn-sm btn-outline-secondary">View
                                     </a>
                                     {% if not perms.mailing.change_mailing %}
+                                    {% if object.mailing.status != 'Canceled' %}
                                     <a href="{% url 'mailing_again' object.mailing.pk %}" type="button"
                                        class="btn btn-sm btn-outline-secondary">Again
                                     </a>
+                                    {% endif %}
                                     {% else %}
                                     {% if object.mailing.status == 'Canceled' %}
                                     <a href="{% url 'mailing_change_status' object.mailing.pk %}" type="button"

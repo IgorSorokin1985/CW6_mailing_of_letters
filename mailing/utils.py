@@ -77,7 +77,6 @@ def sorting_list_mailings(mailings_list):
     result_list = []
     if len(mailings_list) > 0:
         for mailing in mailings_list:
-            print(mailing)
             result = {
                 "mailing": mailing,
                 "message": Message.objects.filter(mailing=mailing).last(),

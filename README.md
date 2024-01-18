@@ -2,6 +2,7 @@
 
 ## Description
 This mailing service allows users to send mailings about their products to a large number of customers. The service includes a server part for working with the database and a front-end part.
+
 ## Installation
 Firstly install the project from GitHub and place it somewhere easily accessible from your driver, for example if your drive is named C:, then the location should be something like:
 ```
@@ -38,14 +39,54 @@ DATABASES = {
     }
 }
 ```
+Then you should make migrations with these commands
+```
+python manage.py makemigrations
+```
+If all is ok then
+```
+python manage.py migrate
+```
 
 ## Environment variables
+For work Mailing service it is need create file ".env" with information about your email service and other. Example this file you can see as ".env.sample"
+```
+EMAIL=
+EMAIL_PASSWORD=
+```
+
 ## Loading data
+For load test data for testing you can use command
+```
+pyton manage.py testdata
+```
+
 ## Creating a superuser
+For create superuser you should use command
+```
+pyton manage.py csu
+```
+
 ## Creating a user
 ## User verification
 ## Group of staff users
+There are two groups for staff users - **Moderator** and **Content Manager**.
+Only Superuser can add permission in admin panel.
+
 ## Moderator capabilities
+Moderator can view all mailings and users. Moderator can cancel and activate all mailings. Moderator can deactivate and activate all users. Moderator cannot change and delete mailings.
+
 ## Content manager capabilities
+Content manager can add and change articles.
+
 ## Start schedule
-## Additional commands
+For start automatic sending mailings you should use command. Apscheduler look all mailings, check which mailings should be sended and send. This checking happens every 10 seconds.
+```
+pyton manage.py runapscheduler
+```
+
+## Other commands
+For onetime sending all ready mailings you should use command
+```
+pyton manage.py runmailings
+```

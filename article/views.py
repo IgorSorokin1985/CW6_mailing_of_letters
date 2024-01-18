@@ -6,6 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.core.mail import send_mail
 from config.settings import EMAIL_HOST_USER
 from article.forms import ArticleForm
+from config.settings import CACHE_ENABLED
+from django.core.cache import cache
 
 # Create your views here.
 
@@ -55,7 +57,14 @@ class ArticleListView(ListView):
     template_name = 'article/article_list.html'
 
     def get_queryset(self):
-        articles = super().get_queryset()
+        if CACHE_ENABLED:
+            key = 'article_list'
+            articles = cache.get(key)
+            if articles is None:
+                articles = super().get_queryset()
+                cache.set(key, articles)
+        else:
+            articles = super().get_queryset()
         if self.request.user.groups.filter(name='content_manager').exists():
             return articles
         return articles.filter(is_published=True)

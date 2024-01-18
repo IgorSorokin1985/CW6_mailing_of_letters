@@ -14,6 +14,8 @@ from mailing.utils import check_status_mailing, mailing_execution, sorting_list_
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import permission_required, login_required
 from django.http import Http404
+from datetime import timedelta
+import datetime
 
 # Create your views here.
 
@@ -95,7 +97,7 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
             raise Http404
 
     def get_success_url(self):
-        return reverse('mailing_list')
+        return reverse('mailing_update', args=[self.kwargs.get('pk')])
 
     def form_valid(self, form):
         self.object = form.save()
@@ -149,6 +151,7 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
 class MailingListView(LoginRequiredMixin, ListView):
     model = Mailing
     template_name = 'mailing/mailing_list.html'
+    ordering = ['data_mailing']
 
     def get_queryset(self):
         mailings_list = super().get_queryset()
@@ -198,7 +201,10 @@ def mailing_change_status(request, pk):
 def mailing_again(request, pk):
     mailing = Mailing.objects.get(pk=pk)
     if mailing.user == request.user:
+        mailing.status = 'Not Ready'
+        mailing.save()
         mailing.status = check_status_mailing(mailing)
+        mailing.data_mailing = datetime.datetime.now() + timedelta(days=1)
         mailing.save()
         return redirect(request.META.get('HTTP_REFERER'))
     else:

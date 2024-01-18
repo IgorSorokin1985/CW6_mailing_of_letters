@@ -70,7 +70,7 @@ pyton manage.py csu
 ## Creating a user
 ## User verification
 ## Group of staff users
-There are two groups for staff users - Moderator and Content Manager.
+There are two groups for staff users - **Moderator** and **Content Manager**.
 Only Superuser can add permission in admin panel.
 
 ## Moderator capabilities

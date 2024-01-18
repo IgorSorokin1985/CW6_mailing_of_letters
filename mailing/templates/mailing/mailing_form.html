@@ -32,14 +32,15 @@
                         <div>
 
 
-                            <input class="btn btn-primary btn-lg px-4 gap-3" type="submit" value="Save mailing">
+                            <a class="btn btn-primary btn-lg px-4 gap-3 " href="{% url 'mailing_info' object.pk %}" role="button">
+                                Back to Mailing info</a>
 
                         </div>
                         <div>
 
 
-                            <a class="btn btn-primary btn-lg px-4 gap-3 " href="{% url 'mailing_list' %}" role="button">Snow
-                                my mailings</a>
+                            <a class="btn btn-primary btn-lg px-4 gap-3 " href="{% url 'mailing_list' %}" role="button">
+                                Back to My Mailings List</a>
                         </div>
                     </div>
                 </div>
@@ -53,7 +54,7 @@
                             {% endfor %}
                         </div>
                         <div class="card-footer">
-                            <input type="button" value="Add client">
+                            <input class="btn btn-primary btn-lg px-4 gap-3" type="submit"  value="Save mailing">
                         </div>
                     </div>
                 </div>

@@ -49,7 +49,7 @@ python manage.py migrate
 ```
 
 ## Environment variables
-For work Mailing service it is need create file ".env" with information about your email service and other. Example this file you can see as ".env.sample"
+For working Mailing service it is need create file ".env" with information about your email service and other. Example this file you can see as ".env.sample"
 ```
 EMAIL_HOST=
 EMAIL=
@@ -59,7 +59,7 @@ CACHE_LOCATION=
 ```
 
 ## Creating a superuser
-For create superuser you should use command
+For creating superuser you should use command
 ```
 pyton manage.py csu
 ```
@@ -75,7 +75,7 @@ Moderator can view all mailings and users. Moderator can cancel and activate all
 Content manager can add and change articles.
 
 ## Start schedule
-For start automatic sending mailings you should use command. Apscheduler look all mailings, check which mailings should be sended and send. This checking happens every 10 seconds.
+For starting automatic sending mailings you should use command. Apscheduler look all mailings, check which mailings should be sended and send. This checking happens every 10 seconds.
 ```
 pyton manage.py runapscheduler
 ```

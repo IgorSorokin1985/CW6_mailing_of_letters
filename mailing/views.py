@@ -18,6 +18,9 @@ import datetime
 
 
 class MailingCreateView(LoginRequiredMixin, CreateView):
+    """
+    Creating new mailing.
+    """
     model = Mailing
     form_class = MailingForm
     template_name = 'mailing/mailing_form.html'
@@ -26,6 +29,9 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
         return reverse('mailing_list')
 
     def form_valid(self, form):
+        """
+        Adding name of mailing (if user did not add). For creating mailing we use formset.
+        """
         self.object = form.save()
         self.object.user = self.request.user
         if self.object.name is None:
@@ -58,22 +64,30 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
         else:
             context_data['mailing_formset'] = mailing_formset()
             context_data['client_formset'] = client_formset()
-
         return context_data
 
 
 class MailingDetailView(LoginRequiredMixin, DetailView):
+    """
+    View current mailing.
+    """
     model = Mailing
     template_name = 'mailing/mailing_info.html'
 
     def get_object(self, queryset=None):
+        """
+        Checking permission.
+        """
         mailing = super().get_object()
-        if mailing.user == self.request.user or self.request.user.groups.filter(name='moderator').exists():
+        if mailing.user == self.request.user or self.request.user.has_perm('mailing.change_mailing'):
             return mailing
         else:
             raise Http404
 
     def get_context_data(self, *, object_list=None, **kwargs):
+        """
+        Additional information about mailing.
+        """
         context = super().get_context_data(**kwargs)
         context["message"] = Message.objects.filter(mailing=self.object).last()
         context["clients"] = Client.objects.filter(mailing=self.object).all()
@@ -87,6 +101,9 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'mailing/mailing_form.html'
 
     def get_object(self, queryset=None):
+        """
+        Checking permission.
+        """
         mailing = super().get_object()
         if mailing.user == self.request.user:
             return mailing
@@ -97,6 +114,9 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
         return reverse('mailing_update', args=[self.kwargs.get('pk')])
 
     def form_valid(self, form):
+        """
+        For updating mailing we use formset.
+        """
         self.object = form.save()
         self.object.user = self.request.user
         self.object.save()
@@ -138,6 +158,9 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('mailing_list')
 
     def get_object(self, queryset=None):
+        """
+        Checking permission.
+        """
         mailing = super().get_object()
         if mailing.user == self.request.user:
             return mailing
@@ -146,11 +169,17 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class MailingListView(LoginRequiredMixin, ListView):
+    """
+    View mailings list.
+    """
     model = Mailing
     template_name = 'mailing/mailing_list.html'
     ordering = ['data_mailing']
 
     def get_queryset(self):
+        """
+        Checking permission.
+        """
         mailings_list = super().get_queryset()
         if self.request.user.has_perm('mailing.change_mailing'):
             return mailings_list
@@ -164,6 +193,9 @@ class MailingListView(LoginRequiredMixin, ListView):
 
 @login_required
 def mailing_go(request, pk):
+    """
+    This function is to start the execution of the current mailing.
+    """
     mailing = Mailing.objects.get(pk=pk)
     if mailing.user == request.user:
         mailing_execution(mailing)
@@ -174,6 +206,9 @@ def mailing_go(request, pk):
 
 @login_required
 def mailing_finish(request, pk):
+    """
+    This function is to finish of the current mailing.
+    """
     mailing = Mailing.objects.get(pk=pk)
     if mailing.user == request.user:
         mailing.status = 'Finished'
@@ -185,6 +220,9 @@ def mailing_finish(request, pk):
 
 @permission_required('mailing.change_mailing')
 def mailing_change_status(request, pk):
+    """
+    This function for changing status of mailing (Canceled/Ready). Only for moderators.
+    """
     mailing = Mailing.objects.get(pk=pk)
     if mailing.status == 'Canceled':
         mailing.status = check_status_mailing(mailing)
@@ -196,6 +234,9 @@ def mailing_change_status(request, pk):
 
 @login_required
 def mailing_again(request, pk):
+    """
+    This function is for restarting the mailing.
+    """
     mailing = Mailing.objects.get(pk=pk)
     if mailing.user == request.user:
         mailing.status = 'Not Ready'

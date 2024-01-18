@@ -22,11 +22,17 @@ from mailing.utils import sorting_list_mailings
 
 
 class LoginView(BaseLoginView):
+    """
+    This view for log in user.
+    """
     template_name = 'users/login.html'
     form_class = AuthenticationForm
 
 
 class EmailVerify(View):
+    """
+    This view for email verification.
+    """
 
     def get(self, request, uidb64, token):
         user = self.get_user(uidb64)
@@ -50,10 +56,16 @@ class EmailVerify(View):
 
 
 class LogoutView(BaseLogoutView):
+    """
+    This view for log out user.
+    """
     pass
 
 
 class RegisterView(CreateView):
+    """
+    This view gor registration new user.
+    """
     model = User
     form_class = UserRegisterForm
     success_url = reverse_lazy('login')
@@ -66,6 +78,9 @@ class RegisterView(CreateView):
 
 
 class UserUpdateView(LoginRequiredMixin, UpdateView):
+    """
+    This view for update user.
+    """
     model = User
     success_url = reverse_lazy('user_update')
     form_class = UserForm
@@ -76,6 +91,9 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
 @permission_required('mailing.change_mailing')
 def user_profile(request, pk):
+    """
+    This view for viewing information about user with pk=pk. Only for moderators.
+    """
     user = User.objects.get(pk=pk)
     mailing_list = sorted(Mailing.objects.filter(user=user).all(), key=lambda object: object.pk,
                           reverse=True)
@@ -85,6 +103,9 @@ def user_profile(request, pk):
 
 
 def forgot_password(request):
+    """
+    This function for getting new password.
+    """
     if request.method == 'POST':
         email = request.POST.get('user_email')
         try:
@@ -111,6 +132,9 @@ def forgot_password(request):
 
 @permission_required('mailing.change_mailing')
 def moderator_users(request):
+    """
+    This view for viewing information about all users. Only for moderators.
+    """
     users = User.objects.all()
     objects = []
     for user in users:
@@ -124,6 +148,9 @@ def moderator_users(request):
 
 @permission_required('mailing.change_mailing')
 def user_change_active(request, pk):
+    """
+    This function for changing status is_active of user. Only for moderators.
+    """
     user = User.objects.get(pk=pk)
     if user.is_active:
         user.is_active = False

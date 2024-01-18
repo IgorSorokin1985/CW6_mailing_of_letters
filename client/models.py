@@ -6,6 +6,9 @@ NULLABLE = {'blank': True, 'null': True }
 
 # Create your models here.
 class Client(models.Model):
+    """
+    Model for clients
+    """
     name = models.CharField(max_length=50, verbose_name='Name')
     lastname = models.CharField(max_length=50, verbose_name='Lastname')
     birthday = models.DateField(verbose_name='Birthday', **NULLABLE)

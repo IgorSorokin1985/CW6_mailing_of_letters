@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from mailing.models import Mailing
 from django.urls import reverse_lazy, reverse
@@ -11,13 +10,11 @@ from client.forms import ClientForm
 from django.forms import inlineformset_factory
 from django.shortcuts import redirect
 from mailing.utils import check_status_mailing, mailing_execution, sorting_list_mailings
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import permission_required, login_required
 from django.http import Http404
 from datetime import timedelta
 import datetime
-
-# Create your views here.
 
 
 class MailingCreateView(LoginRequiredMixin, CreateView):
@@ -155,7 +152,7 @@ class MailingListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         mailings_list = super().get_queryset()
-        if self.request.user.groups.filter(name='moderator').exists():
+        if self.request.user.has_perm('mailing.change_mailing'):
             return mailings_list
         else:
             return mailings_list.filter(user=self.request.user)

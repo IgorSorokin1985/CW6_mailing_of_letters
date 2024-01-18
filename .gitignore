@@ -160,4 +160,4 @@ cython_debug/
 .idea/
 media/article/
 media/users/
-.evn
+.env

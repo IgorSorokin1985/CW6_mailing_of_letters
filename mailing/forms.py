@@ -3,6 +3,9 @@ from mailing.models import Mailing
 
 
 class MailingForm(forms.ModelForm):
+    """
+    This form for creating and updating mailing.
+    """
 
     class Meta:
         model = Mailing

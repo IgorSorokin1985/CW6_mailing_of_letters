@@ -1,20 +1,18 @@
-import datetime
 import logging
-import pytz
-
 from django.conf import settings
-
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 from django.core.management.base import BaseCommand
 from django_apscheduler.jobstores import DjangoJobStore
-from mailing.models import Mailing
 from mailing.utils import send_ready_mailings
 
 logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
+    """
+    When launched, this robot checks the mailing list every 10 seconds and sends everything ready for mailing and with the appropriate time.
+    """
 
     def handle(self, *args, **options):
         print('apscheduler work')

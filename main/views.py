@@ -8,6 +8,9 @@ import random
 
 # Create your views here.
 def index(request):
+    """
+    Home page. If we have articles in database - we take 3 random articles.
+    """
     articles = Article.objects.all()
     if len(articles) > 0:
         data = {

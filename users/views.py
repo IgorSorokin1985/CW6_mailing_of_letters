@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import CreateView, UpdateView
 from users.models import User
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.views import LoginView as BaseLoginView
@@ -9,21 +9,16 @@ from users.utils import send_email_for_verify
 from django.shortcuts import redirect
 from django.views import View
 from django.contrib.auth.tokens import default_token_generator as token_generator
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import login
 from django.core.exceptions import ValidationError
 from django.utils.http import urlsafe_base64_decode
 from django.core.mail import send_mail
 from config.settings import EMAIL_HOST_USER
 from mailing.models import Mailing
-from message.models import Message
-from client.models import Client
-from log.models import Log
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import permission_required
 import random
 from mailing.utils import sorting_list_mailings
-
-# Create your views here.
 
 
 class LoginView(BaseLoginView):

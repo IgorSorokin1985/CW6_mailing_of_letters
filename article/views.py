@@ -1,18 +1,16 @@
-from django.shortcuts import render
 from article.models import Article
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.core.mail import send_mail
-from config.settings import EMAIL_HOST_USER
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from article.forms import ArticleForm
 from config.settings import CACHE_ENABLED
 from django.core.cache import cache
 
-# Create your views here.
-
 
 class ArticleCreateView(PermissionRequiredMixin, CreateView):
+    """
+    Creating new article
+    """
     model = Article
     form_class = ArticleForm
     template_name = 'article/article_form.html'
@@ -23,6 +21,9 @@ class ArticleCreateView(PermissionRequiredMixin, CreateView):
 
 
 class ArticleDetailView(DetailView):
+    """
+    View current article.
+    """
     model = Article
     template_name = 'article/article_info.html'
 
@@ -36,6 +37,9 @@ class ArticleDetailView(DetailView):
 
 
 class ArticleDeleteView(PermissionRequiredMixin, DeleteView):
+    """
+    Delete current article
+    """
     model = Article
     template_name = 'article/article_confirm_delete.html'
     success_url = reverse_lazy('index')
@@ -43,6 +47,9 @@ class ArticleDeleteView(PermissionRequiredMixin, DeleteView):
 
 
 class ArticleUpdateView(PermissionRequiredMixin, UpdateView):
+    """
+    Update current article
+    """
     model = Article
     form_class = ArticleForm
     template_name = 'article/article_form.html'
@@ -53,10 +60,16 @@ class ArticleUpdateView(PermissionRequiredMixin, UpdateView):
 
 
 class ArticleListView(ListView):
+    """
+    View list of articles
+    """
     model = Article
     template_name = 'article/article_list.html'
 
     def get_queryset(self):
+        """
+        Checking perm (article.change_article). If user has perm - he get all articles. For other users - only published articles.
+        """
         if CACHE_ENABLED:
             key = 'article_list'
             articles = cache.get(key)
@@ -65,10 +78,6 @@ class ArticleListView(ListView):
                 cache.set(key, articles)
         else:
             articles = super().get_queryset()
-        if self.request.user.groups.filter(name='content_manager').exists():
+        if self.request.user.has_perm('article.change_article'):
             return articles
         return articles.filter(is_published=True)
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data()
-        return context

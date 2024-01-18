@@ -1,14 +1,18 @@
 import datetime
 import pytz
-
 from message.models import Message
 from client.models import Client
 from mailing.models import Mailing
 from log.models import Log
 from datetime import timedelta
+from django.core.mail import send_mail
+from config.settings import EMAIL_HOST_USER
 
 
 def check_status_mailing(mailing):
+    """
+    This function for checking mailing' status. If all is ok - change Status on Ready.
+    """
     if mailing.status != 'Finished':
         if len(Message.objects.filter(mailing=mailing.pk).all()) > 0:
             if len(Client.objects.filter(mailing=mailing.pk).all()) > 0:
@@ -22,19 +26,41 @@ def check_status_mailing(mailing):
 
 
 def mailing_execution(mailing):
+    """
+    This function for execution of mailing.
+    """
     mailing = Mailing.objects.get(pk=mailing.pk)
     message = Message.objects.get(mailing=mailing.pk)
     clients = Client.objects.filter(mailing=mailing.pk).all()
+    answers = []
+    success_attempt = 0
+    unsuccessful_attempt = 0
     for client in clients:
-        print(client.name)
-        print(client.email)
-        print(message.title)
-        print(message.body)
-    add_history_of_mailing(mailing)
-    add_new_datetime(mailing)
+        try:
+            print('email host')
+            print(EMAIL_HOST_USER)
+            print('end email host')
+            answer = send_mail(
+                subject=message.title,
+                message=get_letter(client, message),
+                from_email=EMAIL_HOST_USER,
+                recipient_list=[client.email]
+            )
+            answers.append(f'Mailing - {mailing.name}, Date - {datetime.datetime.now()}, {client.email} - {answer}/n')
+            success_attempt += 1
+        except Exception:
+            print('Error')
+            answers.append(f'Mailing - {mailing.name}, Date - {datetime.datetime.now()}, {client.email} - Error/n')
+            unsuccessful_attempt += 1
+    add_history_of_mailing(mailing, answers, success_attempt, unsuccessful_attempt)
+    if success_attempt > 0:
+        add_new_datetime(mailing)
 
 
 def add_new_datetime(mailing):
+    """
+    If the mailing is repeated, then this function sets a new time.
+    """
     if mailing.periodicity_id == 1:
         mailing.status = 'Finished'
     elif mailing.periodicity_id == 2:
@@ -44,21 +70,26 @@ def add_new_datetime(mailing):
     mailing.save()
 
 
-def add_history_of_mailing(mailing):
+def add_history_of_mailing(mailing, answers, success_attempt, unsuccessful_attempt):
+    """
+    This function for adding history about sending in mailing's log.
+    """
     new_log = {
         "datatime": datetime.datetime.now(),
         "mailing": mailing,
-        "status": "Success",
-        "answer_mail_server": 200,
+        "status": f"Success - {success_attempt}, Unsuccessful - {unsuccessful_attempt}",
+        "answer_mail_server": answers,
     }
     Log.objects.create(**new_log)
 
 
 def send_ready_mailings():
+    """
+    This function is finding mailing with status Ready and expired date. And start sending message to clients
+    (if such mailings were found).
+    """
     utc = pytz.UTC
-
     now = datetime.datetime.now().replace(tzinfo=utc)
-
     mailings = Mailing.objects.filter(status='Ready').all()
     count = 0
     for mailing in mailings:
@@ -73,6 +104,10 @@ def send_ready_mailings():
 
 
 def sorting_list_mailings(mailings_list):
+    """
+    Function for sorting mailings.
+    return: contex with  mailing_list and finished_list
+    """
     finished_list = []
     result_list = []
     if len(mailings_list) > 0:
@@ -99,3 +134,11 @@ def sorting_list_mailings(mailings_list):
     else:
         context["number_finished_mailings"] = False
     return context
+
+
+def get_letter(client, message):
+    """
+    Function for creating letter for client.
+    """
+    result = f'Hello {client.name} {client.lastname},/n{message.body}'
+    return result

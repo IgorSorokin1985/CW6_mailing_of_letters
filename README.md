@@ -51,14 +51,11 @@ python manage.py migrate
 ## Environment variables
 For work Mailing service it is need create file ".env" with information about your email service and other. Example this file you can see as ".env.sample"
 ```
+EMAIL_HOST=
 EMAIL=
 EMAIL_PASSWORD=
-```
-
-## Loading data
-For load test data for testing you can use command
-```
-pyton manage.py testdata
+CACHE_ENABLED=
+CACHE_LOCATION=
 ```
 
 ## Creating a superuser
@@ -67,8 +64,6 @@ For create superuser you should use command
 pyton manage.py csu
 ```
 
-## Creating a user
-## User verification
 ## Group of staff users
 There are two groups for staff users - **Moderator** and **Content Manager**.
 Only Superuser can add permission in admin panel.

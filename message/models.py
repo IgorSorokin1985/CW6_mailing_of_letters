@@ -6,6 +6,9 @@ NULLABLE = {'blank': True, 'null': True}
 
 
 class Message(models.Model):
+    """
+    Model for messages.
+    """
     title = models.CharField(max_length=50, verbose_name='Title')
     body = models.TextField(verbose_name='Body of message')
     mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name='Mailing id')

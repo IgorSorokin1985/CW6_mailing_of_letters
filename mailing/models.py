@@ -25,6 +25,7 @@ class Mailing(models.Model):
     """
     name = models.CharField(max_length=50, verbose_name='Name mailing', **NULLABLE)
     data_mailing = models.DateTimeField(verbose_name='Datetime of mailing')
+    data_mailing_finish = models.DateTimeField(verbose_name='Finish datetime of mailing (optional)', **NULLABLE)
     periodicity = models.ForeignKey(Periodicity, on_delete=models.CASCADE, verbose_name='periodicity')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,  **NULLABLE, verbose_name='Client id')
     status = models.CharField(max_length=50, verbose_name='Status mailing', **NULLABLE)

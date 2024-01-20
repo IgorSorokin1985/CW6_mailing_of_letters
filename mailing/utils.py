@@ -29,32 +29,36 @@ def mailing_execution(mailing):
     """
     This function for execution of mailing.
     """
-    mailing = Mailing.objects.get(pk=mailing.pk)
-    message = Message.objects.get(mailing=mailing.pk)
-    clients = Client.objects.filter(mailing=mailing.pk).all()
-    answers = []
-    success_attempt = 0
-    unsuccessful_attempt = 0
-    for client in clients:
-        try:
-            print('email host')
-            print(EMAIL_HOST_USER)
-            print('end email host')
-            answer = send_mail(
-                subject=message.title,
-                message=get_letter(client, message),
-                from_email=EMAIL_HOST_USER,
-                recipient_list=[client.email]
-            )
-            answers.append(f'Mailing - {mailing.name}, Date - {datetime.datetime.now()}, {client.email} - {answer}/n')
-            success_attempt += 1
-        except Exception:
-            print('Error')
-            answers.append(f'Mailing - {mailing.name}, Date - {datetime.datetime.now()}, {client.email} - Error/n')
-            unsuccessful_attempt += 1
-    add_history_of_mailing(mailing, answers, success_attempt, unsuccessful_attempt)
-    if success_attempt > 0:
-        add_new_datetime(mailing)
+    if check_date_mailing_finish(mailing):
+        mailing = Mailing.objects.get(pk=mailing.pk)
+        message = Message.objects.get(mailing=mailing.pk)
+        clients = Client.objects.filter(mailing=mailing.pk).all()
+        answers = []
+        success_attempt = 0
+        unsuccessful_attempt = 0
+        for client in clients:
+            try:
+                print('email host')
+                print(EMAIL_HOST_USER)
+                print('end email host')
+                answer = send_mail(
+                    subject=message.title,
+                    message=get_letter(client, message),
+                    from_email=EMAIL_HOST_USER,
+                    recipient_list=[client.email]
+                )
+                answers.append(f'Mailing - {mailing.name}, Date - {datetime.datetime.now()}, {client.email} - {answer}/n')
+                success_attempt += 1
+            except Exception:
+                print('Error')
+                answers.append(f'Mailing - {mailing.name}, Date - {datetime.datetime.now()}, {client.email} - Error/n')
+                unsuccessful_attempt += 1
+        add_history_of_mailing(mailing, answers, success_attempt, unsuccessful_attempt)
+        if success_attempt > 0:
+            add_new_datetime(mailing)
+    else:
+        mailing.status = 'Finished'
+        mailing.save()
 
 
 def add_new_datetime(mailing):
@@ -67,6 +71,8 @@ def add_new_datetime(mailing):
         mailing.data_mailing = datetime.datetime.now() + timedelta(days=1)
     elif mailing.periodicity_id == 3:
         mailing.data_mailing = datetime.datetime.now() + timedelta(days=7)
+    if check_date_mailing_finish(mailing):
+        mailing.status = 'Finished'
     mailing.save()
 
 
@@ -95,8 +101,12 @@ def send_ready_mailings():
     for mailing in mailings:
         datetime_mailing = mailing.data_mailing.replace(tzinfo=utc)
         if now > datetime_mailing:
-            mailing_execution(mailing.pk)
-            count += 1
+            if check_date_mailing_finish(mailing):
+                mailing_execution(mailing.pk)
+                count += 1
+            else:
+                mailing.status = 'Finished'
+                mailing.save()
     if count > 0:
         print(f'All mailings with the Ready status have been completed. Total {count} mailings.')
     else:
@@ -142,3 +152,15 @@ def get_letter(client, message):
     """
     result = f'Hello {client.name} {client.lastname},/n{message.body}'
     return result
+
+
+def check_date_mailing_finish(mailing):
+    if mailing.data_mailing_finish:
+        utc = pytz.UTC
+        now = datetime.datetime.now().replace(tzinfo=utc)
+        if mailing.data_mailing_finish > now:
+            return True
+        else:
+            return False
+    else:
+        return True

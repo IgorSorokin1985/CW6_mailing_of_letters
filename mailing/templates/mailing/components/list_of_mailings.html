@@ -11,6 +11,7 @@
                 <th scope="col">pk</th>
                 <th scope="col">Name of Mailing</th>
                 <th scope="col">Next date</th>
+                <th scope="col">Finish date</th>
                 <th scope="col">Status</th>
                 <th scope="col">Message title</th>
                 {% if not perms.mailing.change_mailing %}
@@ -32,6 +33,7 @@
                 <th scope="row">{{ object.mailing.pk }}</th>
                 <td>{{ object.mailing.name }}</td>
                 <td>{{ object.mailing.data_mailing }}</td>
+                <td>{{ object.mailing.data_mailing_finish }}</td>
                 <td>{{ object.mailing.status }}</td>
                 <td>{{ object.message.title }}</td>
                 {% if not perms.mailing.change_mailing %}

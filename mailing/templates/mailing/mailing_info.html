@@ -14,6 +14,9 @@
                     <div class="card-body">
                         <p class="card-text">Name of mailing - {{ object.name }}</p>
                         <p class="card-text">Date of mailing - {{ object.data_mailing }}</p>
+                        {% if object.data_mailing_finish %}
+                        <p class="card-text">Finish date of mailing - {{ object.data_mailing_finish }}</p>
+                        {% endif %}
                         <p class="card-text">Periodicity - {{ object.periodicity }}</p>
                         <p class="card-text">Status - {{ object.status }}</p>
                     </div>

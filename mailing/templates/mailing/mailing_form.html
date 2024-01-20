@@ -31,10 +31,10 @@
                     <div class="col d-flex align-items-center justify-content-center justify-content-md-between mb-5">
                         <div>
 
-
+                            {% if object.pk %}
                             <a class="btn btn-primary btn-lg px-4 gap-3 " href="{% url 'mailing_info' object.pk %}" role="button">
                                 Back to Mailing info</a>
-
+                            {% endif %}
                         </div>
                         <div>
 

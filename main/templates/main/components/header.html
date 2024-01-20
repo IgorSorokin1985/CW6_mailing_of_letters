@@ -9,7 +9,9 @@
                 <li><a href="{% url 'index' %}#about_us" class="nav-link px-2">About us</a></li>
                 <li><a href="{% url 'article_list' %}" class="nav-link px-2">Articles</a></li>
                 <li><a href="{% url 'index' %}#statistic" class="nav-link px-2">Statistic</a></li>
+                {% if user.is_authenticated %}
                 <li><a href="{% url 'mailing_list' %}" class="nav-link px-2">Mailings</a></li>
+                {% endif %}
                 {% if perms.mailing.change_mailing %}
                 <li><a href="{% url 'moderator_users' %}" class="nav-link px-2">Users</a></li>
                 {% endif %}
